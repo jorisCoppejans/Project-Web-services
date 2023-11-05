@@ -31,7 +31,6 @@ app.use(bodyParser());
 
 installRest(app);
 
-
 app.use(router.routes()).use(router.allowedMethods());
 
 app.listen(9000, () => logger.info('server is running at ...'));
