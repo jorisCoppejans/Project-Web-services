@@ -1,4 +1,5 @@
 let {COLLECTIONS_DATA, USER_DATA} = require('../data/mock_data');
+const { getLogger } = require('../core/logging');
 
 const getAll = () =>{
   return {count:COLLECTIONS_DATA.length, items: COLLECTIONS_DATA};
@@ -31,22 +32,25 @@ const create = ({ userId, value }) => {
 const updateById = (id, {userId, value}) => {
   const index = COLLECTIONS_DATA.findIndex(c => c.id === id);
   if (index === -1){
-    throw new Error("Collection not found");
+    getLogger().info('Collection not found')
+    //throw new Error("Collection not found");
   }
-  if (userId) {
-    existingUser = USER_DATA.find((user) => user.id === userId);
+  else{
+    if (userId) {
+      existingUser = USER_DATA.find((user) => user.id === userId);
 
-    if (!existingUser) {
-      throw new Error(`There is no user with id ${userId}.`);
+      if (!existingUser) {
+        throw new Error(`There is no user with id ${userId}.`);
+      }
     }
-  }
-  const updatedCollection = {
-    id,
-    userId,
-    value
-  }
-  COLLECTIONS_DATA[index] = updatedCollection;
-  return updatedCollection;
+    const updatedCollection = {
+      id,
+      userId,
+      value
+    }
+    COLLECTIONS_DATA[index] = updatedCollection;
+    return updatedCollection;
+  };
 }
 
 const deleteById = (id) => {

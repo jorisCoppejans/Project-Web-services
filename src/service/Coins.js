@@ -1,4 +1,5 @@
 let {COINS_DATA, COLLECTIONS_DATA} = require('../data/mock_data');
+const { getLogger } = require('../core/logging');
 
 const getAll = () =>{
   return {count:COINS_DATA.length, items: COINS_DATA};
@@ -33,24 +34,27 @@ const create = ({ name, value, collectionId, favorite }) => {
 const updateById = (id, {name, value, collectionId, favorite}) => {
   const index = COINS_DATA.findIndex(c => c.id === id);
   if (index === -1){
-    throw new Error("Coin not found");
+    getLogger().info('Coin not found');
+    //throw new Error("Coin not found");
   }
-  if (collectionId) {
-    existingCollection = COLLECTIONS_DATA.find((collection) => collection.id === collectionId);
+  else{
+    if (collectionId) {
+      existingCollection = COLLECTIONS_DATA.find((collection) => collection.id === collectionId);
 
-    if (!existingCollection) {
-      throw new Error(`There is no collection with id ${collectionId}.`);
+      if (!existingCollection) {
+        throw new Error(`There is no collection with id ${collectionId}.`);
+      }
     }
-  }
-  const updatedCoin = {
-    id,
-    name,
-    value,
-    collectionId,
-    favorite
-  }
-  COINS_DATA[index] = updatedCoin;
-  return updatedCoin;
+    const updatedCoin = {
+      id,
+      name,
+      value,
+      collectionId,
+      favorite
+    }
+    COINS_DATA[index] = updatedCoin;
+    return updatedCoin;
+  };
 }
 
 const deleteById = (id) => {

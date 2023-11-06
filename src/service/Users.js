@@ -1,4 +1,5 @@
 let {USER_DATA} = require('../data/mock_data');
+const { getLogger } = require('../core/logging');
 
 const getAll = () => {
   return {count: USER_DATA.length, items: USER_DATA};
@@ -34,26 +35,28 @@ const updateById = (id, { firstname, lastname, email, password }) => {
   const index = USER_DATA.findIndex((user) => user.id === id);
   
   if (index === -1) {
-    throw new Error('User not found');
-  }
+    getLogger().info('User not found')
+    //throw new Error();
+  }else{
 
-  if (email) {
-    const existingUserIndex = USER_DATA.findIndex((user) => user.email === email);
-    if (existingUserIndex !== -1 && existingUserIndex !== index) {
-      throw new Error(`There is already a user with email ${email}.`);
+    if (email) {
+      const existingUserIndex = USER_DATA.findIndex((user) => user.email === email);
+      if (existingUserIndex !== -1 && existingUserIndex !== index) {
+        throw new Error(`There is already a user with email ${email}.`);
+      }
     }
-  }
 
-  const updatedUser = {
-    id,
-    firstname,
-    lastname,
-    email,
-    password
-  }
+    const updatedUser = {
+      id,
+      firstname,
+      lastname,
+      email,
+      password
+    }
 
-  USER_DATA[index] = updatedUser;
-  return updatedUser;
+    USER_DATA[index] = updatedUser;
+    return updatedUser;
+  }
 };
 
 
