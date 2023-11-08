@@ -22,6 +22,7 @@ let USER_DATA = [
   },
 ];
 
+
 let COLLECTIONS_DATA = [
   {
     id : 1,
@@ -64,5 +65,6 @@ let COINS_DATA = [
     collectionId: 2
   }
 ]
+
 
 module.exports = { USER_DATA, COLLECTIONS_DATA, COINS_DATA };
