@@ -1,9 +1,15 @@
 let {COLLECTIONS_DATA, USER_DATA} = require('../data/mock_data');
 const { getLogger } = require('../core/logging');
+const collectionsRepository = require('../repository/collection');
 
-const getAll = () =>{
-  return {count:COLLECTIONS_DATA.length, items: COLLECTIONS_DATA};
-}
+const getAll = async () => {
+  const items = await collectionsRepository.findAll();
+  return {
+    items,
+    count: items.length,
+  };
+};
+
 
 const getById = (id) => {
   return COLLECTIONS_DATA.find((t) => t.id === id);

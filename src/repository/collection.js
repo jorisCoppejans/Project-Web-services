@@ -14,6 +14,7 @@ const SELECT_COLUMNS = [
 const formatCollection = ({
   id, 
   userId,
+  
   coin_id,
   coin_name,
   coin_value,
@@ -49,7 +50,7 @@ const findById = async (id) => {
       '=',
       `${tables.collection}.id`
     )
-    .where(`${tables.collection}.id`, id)
+    .where(`${tables.coin}.collectionId`, id)
     .first(SELECT_COLUMNS);
 
   return collection && formatCollection(collection);
