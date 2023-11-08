@@ -6,7 +6,6 @@ const installRest = require('./rest');
 const { initializeLogger, getLogger } = require('./core/logging');
 const { initializeData } = require('./data');
 
-
 const NODE_ENV = config.get('env');
 const LOG_LEVEL = config.get('logging.level');
 const LOG_DISABLED = config.get('logging.disabled');
