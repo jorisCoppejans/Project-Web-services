@@ -3,15 +3,15 @@ const UserService = require('../service/Users');
 
 
 const getAllUsers = async(ctx) =>{
-  ctx.body = UserService.getAll();
+  ctx.body = await UserService.getAll();
 };
 
 const getUserById = async (ctx) => {
-  ctx.body = UserService.getById(Number(ctx.params.id));
+  ctx.body = await UserService.getById(Number(ctx.params.id));
 };
 
 const createUser = async (ctx) => {
-  ctx.body = UserService.create({
+  ctx.body = await UserService.create({
     ...ctx.request.body,
     id: Number(ctx.request.body.id),
     firstname: ctx.request.body.firstname,
@@ -23,7 +23,7 @@ const createUser = async (ctx) => {
 };
 
 const updateUser = async(ctx) => {
-  ctx.body = UserService.updateById(Number(ctx.params.id), {
+  ctx.body = await UserService.updateById(Number(ctx.params.id), {
     ...ctx.request.body,
     firstname: ctx.request.body.firstname,
     lastname : ctx.request.body.lastname,
@@ -33,7 +33,7 @@ const updateUser = async(ctx) => {
 };
 
 const deleteUser = async (ctx) => {
-  UserService.deleteById(ctx.params.id);
+  await UserService.deleteById(ctx.params.id);
   ctx.status = 204;
 };
 

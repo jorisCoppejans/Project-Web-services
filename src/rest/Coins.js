@@ -1,18 +1,17 @@
 const Router = require('@koa/router');
 const CoinService = require('../service/Coins');
 
-
 const getAllCoins = async(ctx) =>{
-  ctx.body = CoinService.getAll();
+  ctx.body = await CoinService.getAll();
 };
 
 const getCoinById = async (ctx) => {
-  ctx.body = CoinService.getById(Number(ctx.params.id));
+  ctx.body = await CoinService.getById(Number(ctx.params.id));
 };
 
 
 const createCoin = async (ctx) => {
-  ctx.body = CoinService.create({
+  ctx.body = await CoinService.create({
     ...ctx.request.body,
     id: Number(ctx.request.body.id),
     name: ctx.request.body.name,
@@ -23,7 +22,7 @@ const createCoin = async (ctx) => {
 };
 
 const updateCoin = async (ctx) => {
-  ctx.body = CoinService.updateById(Number(ctx.params.id), {
+  ctx.body = await CoinService.updateById(Number(ctx.params.id), {
     ...ctx.request.body,
     id: Number(ctx.request.body.id),
     name: ctx.request.body.name,
@@ -34,7 +33,7 @@ const updateCoin = async (ctx) => {
 };
 
 const deleteCoin = async (ctx) => {
-  CoinService.deleteById(ctx.params.id);
+  await CoinService.deleteById(ctx.params.id);
   ctx.status = 204;
 };
 

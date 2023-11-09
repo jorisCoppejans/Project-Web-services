@@ -1,66 +1,47 @@
-let {COLLECTIONS_DATA, USER_DATA} = require('../data/mock_data');
-const { getLogger } = require('../core/logging');
 const collectionsRepository = require('../repository/collection');
+const usersRepository = require('../repository/user')
 
 const getAll = async () => {
-  const items = await collectionsRepository.findAll();
+  const collections = await collectionsRepository.getAll();
   return {
-    items,
-    count: items.length,
+    count: collections.length,
+    items: collections,
   };
 };
 
+const getById = async (id) => {
+  const collection = await collectionsRepository.getById(id);
 
-const getById = (id) => {
-  return COLLECTIONS_DATA.find((t) => t.id === id);
+  if (!collection){
+    throw Error(`No collection with id ${id} exists`, {id});
+  }
+
+  return collection;
 };
 
-const create = ({ userId, value }) => {
-  let existingUser;
+const create = async ({ userId, value }) => {
+  const id = await collectionsRepository.create({ userId, value });
+  return await getById(id);
+};
+
+const updateById = async (id, {userId}) => {
   if (userId) {
-    existingUser = USER_DATA.find((user) => user.id === userId);
+    const existingUser = await usersRepository.getById(userId);
 
     if (!existingUser) {
-      throw new Error(`There is no user with id ${userId}.`);
+      throw new Error(`There is no user with id ${userId}.`, {userId});
     }
   }
-  const maxId = Math.max(...COLLECTIONS_DATA.map((i) => i.id));
-
-  const newCollection = {
-    id: maxId + 1,
-    userId,
-    value
-  };
-  COLLECTIONS_DATA.push(newCollection);
-  return newCollection;
-};
-
-const updateById = (id, {userId, value}) => {
-  const index = COLLECTIONS_DATA.findIndex(c => c.id === id);
-  if (index === -1){
-    getLogger().info('Collection not found')
-    //throw new Error("Collection not found");
-  }
-  else{
-    if (userId) {
-      existingUser = USER_DATA.find((user) => user.id === userId);
-
-      if (!existingUser) {
-        throw new Error(`There is no user with id ${userId}.`);
-      }
-    }
-    const updatedCollection = {
-      id,
-      userId,
-      value
-    }
-    COLLECTIONS_DATA[index] = updatedCollection;
-    return updatedCollection;
-  };
+  await collectionsRepository.updateById(id, {id, userId,});
+  return getById(id);
 }
 
-const deleteById = (id) => {
-  COLLECTIONS_DATA = COLLECTIONS_DATA.filter(c => c.id != id);
+const deleteById = async (id) => {
+  const deleted = await collectionsRepository.deleteById(id);
+
+  if (!deleted){
+    throw Error(`No collection with id ${id} exists`, {id})
+  }
 }
 
 module.exports = {getAll, create, getById, updateById, deleteById};

@@ -1,67 +1,55 @@
-let {USER_DATA} = require('../data/mock_data');
-const { getLogger } = require('../core/logging');
+const usersRepository = require('../repository/user');
 
-const getAll = () => {
-  return {count: USER_DATA.length, items: USER_DATA};
-}
-
-const getById = (id) => {
-  return USER_DATA.find((t) => t.id === id);
-};
-
-const create = ({ firstname, lastname, email, password }) => {
-  if (email) {
-    existingUser = USER_DATA.find((user) => user.email === email);
-
-    if (existingUser) {
-      throw new Error(`There is already a user with email ${email}.`);
-    }
-  }
-
-  const maxId = Math.max(...USER_DATA.map((i) => i.id));
-
-  const newUser = {
-    id: maxId + 1,
-    firstname, 
-    lastname, 
-    email, 
-    password
+const getAll = async () => {
+  const users = await usersRepository.getAll();
+  return {
+    count: users.length,
+    items: users,
   };
-  USER_DATA.push(newUser);
-  return newUser;
 };
 
-const updateById = (id, { firstname, lastname, email, password }) => {
-  const index = USER_DATA.findIndex((user) => user.id === id);
-  
-  if (index === -1) {
-    getLogger().info('User not found')
-    //throw new Error();
-  }else{
+const getById = async (id) => {
+  const user = await usersRepository.getById(id);
 
-    if (email) {
-      const existingUserIndex = USER_DATA.findIndex((user) => user.email === email);
-      if (existingUserIndex !== -1 && existingUserIndex !== index) {
-        throw new Error(`There is already a user with email ${email}.`);
-      }
-    }
-
-    const updatedUser = {
-      id,
-      firstname,
-      lastname,
-      email,
-      password
-    }
-
-    USER_DATA[index] = updatedUser;
-    return updatedUser;
+  if (!user){
+    throw Error(`No user with id ${id} exists`, {id});
   }
+
+  return user;
+};
+
+const create = async ({ firstname, lastname, email, password }) => {
+  if (email) {
+    const emails = await usersRepository.getAll().map(u => u.email);
+
+    if (email in emails){
+      throw Error(`There is already a user with email ${email}.`, {email});
+    }
+  }
+
+  const id = await usersRepository.create({ firstname, lastname, email, password });
+  return await getById(id);
+};
+
+const updateById = async (id, { firstname, lastname, email, password }) => {
+  if (email) {
+    const emails = await usersRepository.getAll();
+
+    if (email in emails){
+      throw new Error(`There is already a user with email ${email}.`, {email});
+    }
+  }
+  await usersRepository.updateById(id, {firstname, lastname, email, password});
+  return getById(id);
 };
 
 
-const deleteById = (id) => {
-  USER_DATA = USER_DATA.filter(u => u.id != id);
+const deleteById = async (id) => {
+  const deleted = await usersRepository.deleteById(id);
+
+  if (!deleted){
+    throw Error(`No user with id ${id} exists`, {id})
+  }
 }
 
 

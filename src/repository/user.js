@@ -1,4 +1,13 @@
 const { tables, getKnex } = require('../data/index');
+const { getLogger } = require('../core/logging');
+
+const SELECT_COLUMNS = [
+  `${tables.user}.id`,
+  `${tables.user}.firstname`,
+  `${tables.user}.lastname`,
+  `${tables.user}.email`,
+  `${tables.user}.password`,
+];
 
 
 const formatUser = ({
@@ -7,15 +16,6 @@ const formatUser = ({
   lastname,
   email,
   password,
-
-  collectionId, 
-  userId,
-  
-  coin_id,
-  coin_name,
-  coin_value,
-  coin_collectionId,
-  coin_favorite,
   ...rest
 }) => ({
   ...rest,
@@ -24,51 +24,26 @@ const formatUser = ({
   lastname,
   email,
   password,
-
-  collection : {
-    collectionId: collectionId,
-    userId: userId,
-
-    coins: {
-      id: coin_id,
-      name: coin_name,
-      value : coin_value,
-      collectionId : coin_collectionId,
-      favorite : coin_favorite
-    },
-  }
 });
 
 
-const findAll = () => {
+const getAll = () => {
   return getKnex()(tables.user)
-    .select()
-    .orderBy('name', 'ASC');
+    .select(SELECT_COLUMNS)
+    .orderBy('lastname', 'ASC');
 };
 
-const findById = async (id) => {
+
+const getById = async (id) => {
   const user = await getKnex()(tables.user)
-    .join(
-      tables.collection,
-      `${tables.collection}.userId`,
-      '=',
-      `${tables.user}.id`
-    )
-    .join(
-      tables.coin,
-      `${tables.coin}.collectionId`,
-      '=',
-      `${tables.collection}.id`
-    )
-    .where(`${tables.collection}.userId`, id)
+    .where(`${tables.user}.id`, id)
     .first(SELECT_COLUMNS);
 
   return user && formatUser(user);
 };
 
-const create = async ({ id, firstname, lastname, email, password, }) => {
+const create = async ({ firstname, lastname, email, password, }) => {
   const [id] = await getKnex()(tables.user).insert({
-    id, 
     firstname,
     lastname,
     email,
@@ -78,21 +53,35 @@ const create = async ({ id, firstname, lastname, email, password, }) => {
 };
 
 const updateById = async(id, {firstname, lastname, email, password,}) =>{
-  const [id] = await getKnex()(tables.user).insert({
-    id, 
-    firstname,
-    lastname,
-    email,
-    password,
-  });
-  return id;
+  try{
+    await getKnex()(tables.user).update({
+      firstname,
+      lastname,
+      email,
+      password,
+    })
+    .where (`${tables.user}.id`, id);
+    return id;
+  } catch(error){
+    getLogger().error('Error in updateById', {error});
+    throw error;
+  }
 };
 
 const deleteById = async (id) =>{
-  return (tables.user).where(`${tables.user}.id`, id)
+  try{
+    const rowsAffected = await getKnex()(tables.user)
+    .where(`${tables.user}.id`, id)
+    .delete();
+
+    return rowsAffected > 0;
+  }catch(error){
+    getLogger().error('Error in updateById', {error});
+    throw error;
+  }
 };
 
 
 module.exports = {
-  findById, findAll, create, updateById, deleteById
+  getById, getAll, create, updateById, deleteById
 };

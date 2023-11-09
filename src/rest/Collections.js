@@ -1,27 +1,25 @@
 const Router = require('@koa/router');
 const CollectionService = require('../service/Collections');
 
-
 const getAllCollections = async(ctx) =>{
-  ctx.body = CollectionService.getAll();
+  ctx.body = await CollectionService.getAll();
 };
 
 const getCollectionById = async (ctx) => {
-  ctx.body = CollectionService.getById(Number(ctx.params.id));
+  ctx.body = await CollectionService.getById(Number(ctx.params.id));
 };
 
 const createCollection = async (ctx) => {
-  ctx.body = CollectionService.create({
+  ctx.body = await CollectionService.create({
     ...ctx.request.body,
     id: Number(ctx.request.body.id),
     userId: Number(ctx.request.body.userId),
     value : Number(ctx.request.body.value)
   });
-  
 };
 
 const updateCollection = async (ctx) => {
-  ctx.body = CollectionService.updateById(Number(ctx.params.id), {
+  ctx.body = await CollectionService.updateById(Number(ctx.params.id), {
     ...ctx.request.body,
     id: Number(ctx.request.body.id),
     userId: Number(ctx.request.body.userId),
@@ -30,7 +28,7 @@ const updateCollection = async (ctx) => {
 };
 
 const deleteCollection = async (ctx) => {
-  CollectionService.deleteById(ctx.params.id);
+  await CollectionService.deleteById(ctx.params.id);
   ctx.status = 204;
 };
 

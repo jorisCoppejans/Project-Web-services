@@ -1,64 +1,46 @@
-let {COINS_DATA, COLLECTIONS_DATA} = require('../data/mock_data');
-const { getLogger } = require('../core/logging');
+const coinsRepository = require('../repository/coin');
 
-const getAll = () =>{
-  return {count:COINS_DATA.length, items: COINS_DATA};
-}
-
-const getById = (id) => {
-  return COINS_DATA.find((t) => t.id === id);
+const getAll = async () =>{
+  const coins = await coinsRepository.getAll();
+  return {
+    count: coins.length,
+    items: coins,
+  };
 };
 
-const create = ({ name, value, collectionId, favorite }) => {
-  let existingCollection;
+const getById = async (id) => {
+  const coin = await coinsRepository.getById(id);
+
+  if (!coin){
+    throw Error(`No coin with id ${id} exists`, {id});
+  }
+
+  return coin;
+};
+
+const create = async ({ name, value, collectionId, favorite }) => {
+  const id = await coinsRepository.create({  name, value, collectionId, favorite });
+  return await getById(id);
+};
+
+const updateById = async (id, {name, value, collectionId, favorite}) => {
   if (collectionId) {
     existingCollection = COLLECTIONS_DATA.find((collection) => collection.id === collectionId);
 
     if (!existingCollection) {
       throw new Error(`There is no collection with id ${collectionId}.`);
     }
+  await coinsRepository.updateById(id, {name, value, collectionId, favorite});
+  return getById(id);
   }
-  const maxId = Math.max(...COINS_DATA.map((i) => i.id));
-
-  const newCoin = {
-    id: maxId + 1,
-    name,
-    value,
-    collectionId,
-    favorite
-  };
-  COINS_DATA.push(newCoin);
-  return newCoin;
-};
-
-const updateById = (id, {name, value, collectionId, favorite}) => {
-  const index = COINS_DATA.findIndex(c => c.id === id);
-  if (index === -1){
-    getLogger().info('Coin not found');
-    //throw new Error("Coin not found");
-  }
-  else{
-    if (collectionId) {
-      existingCollection = COLLECTIONS_DATA.find((collection) => collection.id === collectionId);
-
-      if (!existingCollection) {
-        throw new Error(`There is no collection with id ${collectionId}.`);
-      }
-    }
-    const updatedCoin = {
-      id,
-      name,
-      value,
-      collectionId,
-      favorite
-    }
-    COINS_DATA[index] = updatedCoin;
-    return updatedCoin;
-  };
 }
 
-const deleteById = (id) => {
-  COINS_DATA = COINS_DATA.filter(c => c.id != id);
+const deleteById = async (id) => {
+  const deleted = await coinsRepository.deleteById(id);
+
+  if (!deleted){
+    throw Error(`No coin with id ${id} exists`, {id})
+  }
 }
 
 module.exports = {getAll, create, getById, updateById, deleteById};
