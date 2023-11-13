@@ -34,13 +34,19 @@ async function initializeData() {
   };
 
   knexInstance = knex(knexOptions);
-
  
   try {
+    await knexInstance.raw(`create database if not exists ${DATABASE_NAME}`)
+
+    await knexInstance.destroy();
+
+    knexOptions.connection.database = DATABASE_NAME;
+    knexInstance = knex(knexOptions);
     await knexInstance.raw('SELECT 1+1 AS result');
+
   } catch (error) {
     logger.error(error.message, { error }); 
-    throw new Error('Could not initialize the data layer'); 
+    throw Error('Could not initialize the data layer'); 
   }
 
   logger.info('Successfully initialized connection to the database'); 
@@ -64,8 +70,16 @@ const tables = Object.freeze({
   coin: 'coins',
 });
 
+async function shutdownData(){
+  getLogger().info('shutting down database connection');
+  await knexInstance.destroy();
+  knexInstance = null;
+  getLogger().info('database conections closed');
+}
+
 module.exports = {
   initializeData, 
   getKnex, 
-  tables, 
+  tables,
+  shutdownData,
 };
