@@ -62,7 +62,7 @@ describe('Collection', () => {
 
   describe('GET /api/collections', () => {
     beforeAll(async () => {
-      await knex(tables.user).insert(data.user);
+      await knex(tables.user).insert(data.users);
       await knex(tables.collection).insert(data.collection);
     })
 

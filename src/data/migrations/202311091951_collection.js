@@ -1,11 +1,11 @@
-const {tables} = require('../index');
+const { tables } = require('../index');
 
 module.exports = {
-  up: async(knex) =>{
+  up: async (knex) => {
     await knex.schema.createTable(tables.collection, (table) => {
-      table.increments("id").unsigned().notNullable();
-      table.string("userId", 255).unsigned().notNullable();
-      table.float("value").unsigned().notNullable();
+      table.increments('id').unsigned().notNullable();
+      table.integer('userId').unsigned().notNullable();
+      table.float('value', 8, 2).unsigned().notNullable();
 
       table
         .foreign('userId', 'fk_collection_user')
@@ -14,7 +14,7 @@ module.exports = {
     })
   },
 
-  down:(knex) =>{
-    return knex.schema.dropTable(tables.collection);
+  down: async (knex) => {
+    await knex.schema.dropTableIfExists(tables.collection);
   }
 }

@@ -1,5 +1,6 @@
 const knex = require('knex');
 const { getLogger } = require('../core/logging'); 
+const { join } = require('path');
 
 const config = require('config');
 
@@ -26,16 +27,25 @@ async function initializeData() {
     connection: {
       host: DATABASE_HOST,
       port: DATABASE_PORT,
-      database: DATABASE_NAME,
+      //database: DATABASE_NAME,
       user: DATABASE_USERNAME,
       password: DATABASE_PASSWORD,
       insecureAuth: isDevelopment,
+    },
+    debug: isDevelopment,
+    migrations: {
+      tableName: 'knex_meta',
+      directory: join('src', 'data', 'migrations'),
+    },
+    seeds: {
+      directory: join('src', 'data', 'seeds'),
     },
   };
 
   knexInstance = knex(knexOptions);
  
   try {
+    await knexInstance.raw('SELECT 1+1 AS result');
     await knexInstance.raw(`create database if not exists ${DATABASE_NAME}`)
 
     await knexInstance.destroy();
@@ -47,6 +57,26 @@ async function initializeData() {
   } catch (error) {
     logger.error(error.message, { error }); 
     throw Error('Could not initialize the data layer'); 
+  }
+
+  try {
+    await knexInstance.migrate.latest();
+  } catch (error) {
+    logger.error('Error while migrating the database', {
+      error,
+    });
+
+    throw new Error('Migrations failed, check the logs');
+  }
+
+  if (isDevelopment) {
+    try {
+      await knexInstance.seed.run();
+    } catch (error) {
+      logger.error('Error while seeding database', {
+        error,
+      });
+    }
   }
 
   logger.info('Successfully initialized connection to the database'); 
