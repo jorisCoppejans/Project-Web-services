@@ -24,7 +24,7 @@ const updateCollection = async (ctx) => {
     id: Number(ctx.request.body.id),
     userId: Number(ctx.request.body.userId),
     value : Number(ctx.request.body.value)
-  })
+  });
 };
 
 const deleteCollection = async (ctx) => {

@@ -29,8 +29,15 @@ const getById = async (id) => {
     .where(`${tables.collection}.id`, id)
     .select(SELECT_COLUMNS);
 
-  return collection && formatCollection(collection);
+  if (Array.isArray(collection)) {
+    // If it's an array, return the first element
+    return collection.length > 0 ? formatCollection(collection[0]) : null;
+  } else {
+    // If it's not an array, assume it's an object and format accordingly
+    return collection && formatCollection(collection);
+  }
 };
+
 
 const create = async ({ userId }) => {
   const [id] = await getKnex()(tables.collection).insert({
