@@ -20,7 +20,8 @@ const getById = async (id) => {
 
 const create = async ({ firstname, lastname, email, password }) => {
   if (email) {
-    const emails = await usersRepository.getAll().map(u => u.email);
+    const users = await usersRepository.getAll();
+    const emails = users.map(u => u.email);
 
     if (email in emails){
       throw Error(`There is already a user with email ${email}.`, {email});
@@ -33,7 +34,8 @@ const create = async ({ firstname, lastname, email, password }) => {
 
 const updateById = async (id, { firstname, lastname, email, password }) => {
   if (email) {
-    const emails = await usersRepository.getAll();
+    const users = await usersRepository.getAll();
+    const emails = users.map(u => u.email);
 
     if (email in emails){
       throw new Error(`There is already a user with email ${email}.`, {email});

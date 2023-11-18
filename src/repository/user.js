@@ -27,10 +27,11 @@ const formatUser = ({
 });
 
 
-const getAll = () => {
-  return getKnex()(tables.user)
-    .select(SELECT_COLUMNS)
-    .orderBy('lastname', 'ASC');
+const getAll = async () => {
+  const users = await getKnex()(tables.user)
+  .select(SELECT_COLUMNS)
+  .orderBy('lastname', 'ASC');
+  return users
 };
 
 
