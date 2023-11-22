@@ -8,11 +8,6 @@ module.exports = {
       table.float("value").unsigned().notNullable();
       table.integer("collectionId").unsigned().notNullable();
       table.boolean("favorite").notNullable();
-
-      table
-        .foreign('collectionId', 'fk_coin_collection')
-        .references(`${tables.collection}.id`)
-        .onDelete('CASCADE');
     })
   },
 

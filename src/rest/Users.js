@@ -19,6 +19,7 @@ const createUser = async (ctx) => {
     email: ctx.request.body.email,
     password: ctx.request.body.password,
   });
+  ctx.status = 201;
   
 };
 

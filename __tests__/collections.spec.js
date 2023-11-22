@@ -104,7 +104,8 @@ describe('Collection', () => {
         value: 0
       });
     
-      expect(response.status).toBe(200);
+    
+      expect(response.status).toBe(201);
       expect(response.body.id).toBeTruthy();
       expect(response.body.userId).toBe(4);
       expect(response.body.value).toBe(0);

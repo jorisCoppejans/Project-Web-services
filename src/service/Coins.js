@@ -1,4 +1,5 @@
 const coinsRepository = require('../repository/coin');
+const {COLLECTIONS_DATA} = require('../data/mock_data')
 
 const getAll = async () =>{
   const coins = await coinsRepository.getAll();

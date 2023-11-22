@@ -6,23 +6,28 @@ const getAllCoins = async(ctx) =>{
 };
 
 const getCoinById = async (ctx) => {
-  ctx.body = await CoinService.getById(Number(ctx.params.id));
+  const gotCoins = await CoinService.getById(Number(ctx.params.id));
+  gotCoins.favorite = Boolean(gotCoins.favorite)
+  ctx.body = gotCoins;
 };
 
 
 const createCoin = async (ctx) => {
-  ctx.body = await CoinService.create({
+  const createdCoin = await CoinService.create({
     ...ctx.request.body,
     id: Number(ctx.request.body.id),
     name: ctx.request.body.name,
     value : Number(ctx.request.body.value),
     collectionId: Number(ctx.request.body.collectionId),
-    favorite: ctx.request.body.favorite,
+    favorite: Boolean(ctx.request.body.favorite),
   });
+  createdCoin.favorite = Boolean(createdCoin.favorite);
+  ctx.status = 201;
+  ctx.body = createdCoin;
 };
 
 const updateCoin = async (ctx) => {
-  ctx.body = await CoinService.updateById(Number(ctx.params.id), {
+  const updatedCoin = await CoinService.updateById(Number(ctx.params.id), {
     ...ctx.request.body,
     id: Number(ctx.request.body.id),
     name: ctx.request.body.name,
@@ -30,6 +35,8 @@ const updateCoin = async (ctx) => {
     collectionId: Number(ctx.request.body.collectionId),
     favorite: ctx.request.body.favorite,
   })
+  updatedCoin.favorite = Boolean(updatedCoin.favorite);
+  ctx.body = updatedCoin;
 };
 
 const deleteCoin = async (ctx) => {

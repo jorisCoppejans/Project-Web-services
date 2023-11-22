@@ -113,7 +113,7 @@ describe('Users', () => {
         email: 'robbe.vervaet@gmail.com2',
         password: 'abcd12342'
       });
-  
+
       expect(response.status).toBe(201);
       expect(response.body.id).toBeTruthy();
       expect(response.body.firstname).toBe('Robbe2');

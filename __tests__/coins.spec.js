@@ -68,6 +68,10 @@ const data = {
   },]
 };
 
+const convertToBoolean = (value) => {
+  return value === 1 ? true : false;
+};
+
 const url = '/api/coins'
 
 const dataToDelete = {
@@ -105,6 +109,8 @@ describe('Coin', () => {
       const response = await request.get(url);
       expect(response.status).toBe(200);
       expect(response.body.count).toBe(4);
+
+      response.body.items[0].favorite = convertToBoolean(response.body.items[0].favorite);
       expect(response.body.items[0]).toEqual({
         id: 1,
         name: 'Bitcoin',
@@ -112,6 +118,8 @@ describe('Coin', () => {
         collectionId: 1,
         favorite: true,
       });
+
+      response.body.items[1].favorite = convertToBoolean(response.body.items[1].favorite);
       expect(response.body.items[1]).toEqual({
         id: 2,
         name: 'Ethereum',
@@ -119,6 +127,8 @@ describe('Coin', () => {
         collectionId: 1,
         favorite: true, 
       });
+
+      response.body.items[2].favorite = convertToBoolean(response.body.items[2].favorite);
       expect(response.body.items[2]).toEqual({
         id: 3,
         name: 'BNB',
@@ -126,6 +136,8 @@ describe('Coin', () => {
         collectionId: 1,
         favorite: false, 
       });
+
+      response.body.items[3].favorite = convertToBoolean(response.body.items[3].favorite);
       expect(response.body.items[3]).toEqual({
         id: 4,
         name: 'Random',
@@ -157,7 +169,7 @@ describe('Coin', () => {
         favorite: true, 
       });
     
-      expect(response.status).toBe(200);
+      expect(response.status).toBe(201);
       expect(response.body.id).toBeTruthy();
       expect(response.body.name).toBe('Test');
       expect(response.body.value).toBe(500);

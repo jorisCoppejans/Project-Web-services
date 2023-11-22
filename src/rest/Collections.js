@@ -16,6 +16,7 @@ const createCollection = async (ctx) => {
     userId: Number(ctx.request.body.userId),
     value : Number(ctx.request.body.value)
   });
+  ctx.status = 201;
 };
 
 const updateCollection = async (ctx) => {
