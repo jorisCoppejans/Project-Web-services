@@ -62,7 +62,6 @@ describe('Users', () => {
   describe('GET /api/users', () => {
     beforeAll(async () => {
       await knex(tables.user).insert(data.users);
-      await knex(tables.collection).insert(data.collections);
     })
 
     afterAll(async () => {
@@ -97,13 +96,39 @@ describe('Users', () => {
       });
     })
   });
+
+
+  describe('GET /api/users/:id', () => {
+
+    beforeAll(async () => {
+      await knex(tables.user).insert(data.users);
+      await knex(tables.collection).insert(data.collections);
+    })
+
+    afterAll(async () => {
+      await knex(tables.collection).whereIn('id', dataToDelete.collections).delete();
+      await knex(tables.user).whereIn('id', dataToDelete.users).delete();
+    });
+
+    it('should 200 and return the requested user', async () => {
+      const response = await request.get(`${url}/4`);
+
+      expect(response.statusCode).toBe(200);
+      expect(response.body).toEqual({
+        id : 4,
+        firstname: 'Joris',
+        lastname: 'Coppejans',
+        email: 'joris.coppejans@yahoo.com',
+        password: 'abcd1234'
+      });
+    });
+  });
+
   
-  describe('POST /api/users', () => {
-    const usersToDelete = [];
-  
+  describe('POST /api/users', () => { 
+    const usersToDelete = [] 
     afterAll(async () => {
       await knex(tables.user).whereIn('id', usersToDelete).delete();
-
     });
   
     it('should 201 and return the created user', async () => {
@@ -124,5 +149,53 @@ describe('Users', () => {
       usersToDelete.push(response.body.id);
     });
   });
-  
+
+
+  describe('PUT /api/users/:id', () => {
+
+    beforeAll(async () => {
+      await knex(tables.user).insert(data.users[0]);
+    });
+
+    afterAll(async () => {
+      await knex(tables.user)
+        .whereIn('id', dataToDelete.users)
+        .delete();
+    });
+
+    it('should 200 and return the updated user', async () => {
+      const response = await request.put(`${url}/4`)
+        .send({
+          firstname: 'UserChange',
+        });
+
+      expect(response.statusCode).toBe(200);
+      expect(response.body).toEqual({
+        id : 4,
+        firstname: 'UserChange',
+        lastname: 'Coppejans',
+        email: 'joris.coppejans@yahoo.com',
+        password: 'abcd1234'
+      });
+    });
+  });
+
+
+  describe('DELETE /api/users/:id', () => {
+
+    beforeAll(async () => {
+      await knex(tables.user).insert(data.users);
+    });
+
+    afterAll(async () => {
+      await knex(tables.user).whereIn('id', dataToDelete.users).delete();
+    });
+
+    it('should 204 and return nothing', async () => {
+      const response = await request.delete(`${url}/4`);
+
+      expect(response.statusCode).toBe(204);
+      expect(response.body).toEqual({});
+    });
+  });
 });  

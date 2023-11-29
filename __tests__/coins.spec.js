@@ -94,15 +94,13 @@ describe('Coin', () => {
 
   describe('GET /api/coins', () => {
     beforeAll(async () => {
-      await knex(tables.user).insert(data.users);
-      await knex(tables.collection).insert(data.collections);
       await knex(tables.coin).insert(data.coins);
+      await knex(tables.collection).insert(data.collections);
     })
 
     afterAll(async () => {
-      await knex(tables.coin).whereIn('id', dataToDelete.coins).delete();
       await knex(tables.collection).whereIn('id', dataToDelete.collections).delete();
-      await knex(tables.user).whereIn('id', dataToDelete.users).delete();
+      await knex(tables.coin).whereIn('id', dataToDelete.coins).delete();
     })
 
     it('should return 200 and all coins', async () => {
@@ -147,18 +145,37 @@ describe('Coin', () => {
       });
     })
   });
+
+  describe('GET /api/users/:id', () => {
+    beforeAll(async () => {
+      await knex(tables.coin).insert(data.coins);
+      await knex(tables.collection).insert(data.collections);
+    })
+
+    afterAll(async () => {
+      await knex(tables.collection).whereIn('id', dataToDelete.collections).delete();
+      await knex(tables.coin).whereIn('id', dataToDelete.coins).delete();
+    })
+
+    it('should 200 and return the requested coin', async () => {
+      const response = await request.get(`${url}/4`);
+
+      expect(response.statusCode).toBe(200);
+      expect(response.body).toEqual({
+        id: 4,
+        name: 'Random',
+        value: 200,
+        collectionId: 2,
+        favorite: false, 
+      });
+    });
+  });
   
   describe('POST /api/coins', () => {
     const coinsToDelete = [];
-    beforeAll(async () => {
-      await knex(tables.user).insert(data.users);
-      await knex(tables.collection).insert(data.collections);
-    });
 
     afterAll(async () => {
       await knex(tables.coin).whereIn('id', coinsToDelete).delete();
-      await knex(tables.collection).whereIn('id', dataToDelete.collections).delete();
-      await knex(tables.user).whereIn('id', dataToDelete.users).delete();
     });
 
     it('should 201 and return the created coins', async () => {
@@ -177,6 +194,60 @@ describe('Coin', () => {
       expect(response.body.favorite).toBe(true);
           
       coinsToDelete.push(response.body.id);
+    });
+  });
+
+
+  describe('PUT /api/coins/:id', () => {
+
+    beforeAll(async () => {
+      await knex(tables.coin).insert(data.coins);
+      await knex(tables.collection).insert(data.collections);
+    })
+
+    afterAll(async () => {
+      await knex(tables.collection).whereIn('id', dataToDelete.collections).delete();
+      await knex(tables.coin).whereIn('id', dataToDelete.coins).delete();
+    })
+
+    it('should 200 and return the updated coin', async () => {
+      const response = await request.put(`${url}/4`)
+        .send({
+          name: 'CoinChange',
+          value : 159,
+          collectionId : 2,
+          favorite : true
+        });
+
+      expect(response.statusCode).toBe(200);
+      expect(response.body).toEqual({
+        id: 4,
+        name: 'CoinChange',
+        value : 159,
+        collectionId : 2,
+        favorite : true
+      });
+    });
+  });
+
+
+  describe('DELETE /api/coins/:id', () => {
+    beforeAll(async () => {
+      await knex(tables.coin).insert(data.coins);
+      await knex(tables.collection).insert(data.collections);
+    });
+
+    afterAll(async () => {
+      await knex(tables.coin).whereIn('id', dataToDelete.coins).delete();
+      await knex(tables.collection).whereIn('id', dataToDelete.collections).delete();
+      await knex(tables.user).whereIn('id', dataToDelete.users).delete();
+    });
+
+    it('should 204 and return nothing', async () => {
+      const response = await request.delete(`${url}/4`);
+      
+      expect(response.statusCode).toBe(204);
+      expect(response.body).toEqual({});
     });
   });
 });  
