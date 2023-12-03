@@ -89,6 +89,13 @@ describe('Collection', () => {
       });
     });
 
+    it('should 400 when given an argument', async () => {
+      const response = await request.get(`${url}?invalid=true`);
+
+      expect(response.statusCode).toBe(400);
+      expect(response.body.code).toBe('VALIDATION_FAILED');
+      expect(response.body.details.query).toHaveProperty('invalid');
+    });
   });
 
 
@@ -113,6 +120,28 @@ describe('Collection', () => {
         value: 100000, 
       });
     });
+
+    it('should 404 when requesting not existing collection', async () => {
+      const response = await request.get(`${url}/4`);
+  
+      expect(response.statusCode).toBe(404);
+      expect(response.body).toMatchObject({
+        code: 'NOT_FOUND',
+        message: 'No collection with id 4 exists',
+        details: {
+          id: 4,
+        },
+      });
+      expect(response.body.stack).toBeTruthy();
+    });
+
+    it('should 400 with invalid collection id', async () => {
+      const response = await request.get(`${url}/invalid`);
+
+      expect(response.statusCode).toBe(400);
+      expect(response.body.code).toBe('VALIDATION_FAILED');
+      expect(response.body.details.params).toHaveProperty('id');
+    });
   });
 
 
@@ -135,6 +164,32 @@ describe('Collection', () => {
       expect(response.body.value).toBe(0);
 
       collectionsToDelete.push(response.body.id);
+    });
+
+    it('should 404 when user does not exist', async () => {
+      const response = await request.post(url)
+        .send({
+          userId: 7,
+        });
+
+      expect(response.statusCode).toBe(404);
+      expect(response.body).toMatchObject({
+        code: 'NOT_FOUND',
+        message: 'No user with id 7 exists',
+        details: {
+          id: 7,
+        },
+      });
+      expect(response.body.stack).toBeTruthy();
+    });
+
+    it('should 400 when missing user', async () => {
+      const response = await request.post(url)
+        .send({});
+
+      expect(response.statusCode).toBe(400);
+      expect(response.body.code).toBe('VALIDATION_FAILED');
+      expect(response.body.details.body).toHaveProperty('amount');
     });
   });
 

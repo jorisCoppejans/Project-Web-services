@@ -143,7 +143,15 @@ describe('Coin', () => {
         collectionId: 2,
         favorite: false, 
       });
-    })
+    });
+
+    it('should 400 when given an argument', async () => {
+      const response = await request.get(`${url}?invalid=true`);
+
+      expect(response.statusCode).toBe(400);
+      expect(response.body.code).toBe('VALIDATION_FAILED');
+      expect(response.body.details.query).toHaveProperty('invalid');
+    });
   });
 
   describe('GET /api/coins/:id', () => {
@@ -168,6 +176,28 @@ describe('Coin', () => {
         collectionId: 2,
         favorite: false, 
       });
+    });
+
+    it('should 404 when requesting not existing coin', async () => {
+      const response = await request.get(`${url}/7`);
+  
+      expect(response.statusCode).toBe(404);
+      expect(response.body).toMatchObject({
+        code: 'NOT_FOUND',
+        message: 'No coin with id 7 exists',
+        details: {
+          id: 7,
+        },
+      });
+      expect(response.body.stack).toBeTruthy();
+    });
+
+    it('should 400 with invalid coin id', async () => {
+      const response = await request.get(`${url}/invalid`);
+
+      expect(response.statusCode).toBe(400);
+      expect(response.body.code).toBe('VALIDATION_FAILED');
+      expect(response.body.details.params).toHaveProperty('id');
     });
   });
   
@@ -194,6 +224,78 @@ describe('Coin', () => {
       expect(response.body.favorite).toBe(true);
           
       coinsToDelete.push(response.body.id);
+    });
+
+    it('should 404 when collection does not exist', async () => {
+      const response = await request.post(url)
+        .send({
+          name: "test",
+          value: 123, 
+          collectionId: 7, 
+          favorite: false
+        });
+
+      expect(response.statusCode).toBe(404);
+      expect(response.body).toMatchObject({
+        code: 'NOT_FOUND',
+        message: 'No user with id 7 exists',
+        details: {
+          id: 7,
+        },
+      });
+      expect(response.body.stack).toBeTruthy();
+    });
+
+    it('should 400 when missing name', async () => {
+      const response = await request.post(url)
+        .send({
+          value: 123, 
+          collectionId: 1, 
+          favorite: false,
+        });
+
+      expect(response.statusCode).toBe(400);
+      expect(response.body.code).toBe('VALIDATION_FAILED');
+      expect(response.body.details.body).toHaveProperty('amount');
+    });
+
+    it('should 400 when missing value', async () => {
+      const response = await request.post(url)
+        .send({
+          name: "test", 
+          collectionId: 1, 
+          favorite: false,
+        });
+
+      expect(response.statusCode).toBe(400);
+      expect(response.body.code).toBe('VALIDATION_FAILED');
+      expect(response.body.details.body).toHaveProperty('amount');
+    });
+
+    it('should 400 when missing collection', async () => {
+      const response = await request.post(url)
+        .send({
+          name: "test", 
+          value: 123, 
+          favorite: false,
+        });
+
+      expect(response.statusCode).toBe(400);
+      expect(response.body.code).toBe('VALIDATION_FAILED');
+      expect(response.body.details.body).toHaveProperty('amount');
+    });
+
+    it('should 400 when missing favorite', async () => {
+      const response = await request.post(url)
+        .send({
+          name: "test", 
+          collectionId: 1, 
+          value: 123,
+        });
+
+      expect(response.statusCode).toBe(400);
+      expect(response.body.code).toBe('VALIDATION_FAILED');
+      expect(response.body.details.body).toHaveProperty('amount');
     });
   });
 

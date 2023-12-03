@@ -94,7 +94,15 @@ describe('Users', () => {
         email: 'robbe.vervaet@gmail.com',
         password: 'abcd1234'
       });
-    })
+    });
+
+    it('should 400 when given an argument', async () => {
+      const response = await request.get(`${url}?invalid=true`);
+
+      expect(response.statusCode).toBe(400);
+      expect(response.body.code).toBe('VALIDATION_FAILED');
+      expect(response.body.details.query).toHaveProperty('invalid');
+    });
   });
 
 
@@ -122,6 +130,28 @@ describe('Users', () => {
         password: 'abcd1234'
       });
     });
+
+    it('should 404 when requesting not existing user', async () => {
+      const response = await request.get(`${url}/7`);
+  
+      expect(response.statusCode).toBe(404);
+      expect(response.body).toMatchObject({
+        code: 'NOT_FOUND',
+        message: 'No user with id 7 exists',
+        details: {
+          id: 7,
+        },
+      });
+      expect(response.body.stack).toBeTruthy();
+    });
+
+    it('should 400 with invalid user id', async () => {
+      const response = await request.get(`${url}/invalid`);
+
+      expect(response.statusCode).toBe(400);
+      expect(response.body.code).toBe('VALIDATION_FAILED');
+      expect(response.body.details.params).toHaveProperty('id');
+    });
   });
 
   
@@ -147,6 +177,58 @@ describe('Users', () => {
       expect(response.body.password).toBe('abcd12342');
   
       usersToDelete.push(response.body.id);
+    });
+
+    it('should 400 when missing firstname', async () => {
+      const response = await request.post(url)
+        .send({
+          lastname: "coppejans", 
+          email: "test@test.com", 
+          password: "abc123"
+        });
+
+      expect(response.statusCode).toBe(400);
+      expect(response.body.code).toBe('VALIDATION_FAILED');
+      expect(response.body.details.body).toHaveProperty('amount');
+    });
+
+    it('should 400 when missing lastname', async () => {
+      const response = await request.post(url)
+        .send({
+          firstname: "joris",
+          email: "test@test.com", 
+          password: "abc123",
+        });
+
+      expect(response.statusCode).toBe(400);
+      expect(response.body.code).toBe('VALIDATION_FAILED');
+      expect(response.body.details.body).toHaveProperty('amount');
+    });
+
+    it('should 400 when missing email', async () => {
+      const response = await request.post(url)
+        .send({
+          firstname: "joris",
+          lastname: "coppejans", 
+          password: "abc123",
+        });
+
+      expect(response.statusCode).toBe(400);
+      expect(response.body.code).toBe('VALIDATION_FAILED');
+      expect(response.body.details.body).toHaveProperty('amount');
+    });
+
+    it('should 400 when missing password', async () => {
+      const response = await request.post(url)
+        .send({
+          firstname: "joris",
+          lastname: "coppejans", 
+          email: "test@test.com",
+        });
+
+      expect(response.statusCode).toBe(400);
+      expect(response.body.code).toBe('VALIDATION_FAILED');
+      expect(response.body.details.body).toHaveProperty('amount');
     });
   });
 

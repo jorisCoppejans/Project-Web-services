@@ -25,6 +25,7 @@ class ServiceError extends Error {
   get isValidationFailed() {
     return this.code === VALIDATION_FAILED;
   }
+  
 }
 
 module.exports = ServiceError;
