@@ -1,5 +1,7 @@
 const collectionsRepository = require('../repository/collection');
-const usersRepository = require('../repository/user')
+const usersRepository = require('../repository/user');
+const ServiceError = require('../core/serviceError');
+const handleDBError = require('./_handleDBError');
 
 const getAll = async () => {
   const collections = await collectionsRepository.getAll();
@@ -13,15 +15,25 @@ const getById = async (id) => {
   const collection = await collectionsRepository.getById(id);
 
   if (!collection){
-    throw Error(`No collection with id ${id} exists`, {id});
+    //throw Error(`No collection with id ${id} exists`, {id});
+    throw ServiceError.notFound(`No collections with id ${id} exists`, { id });
   }
 
   return collection;
 };
 
 const create = async ({ userId, value }) => {
-  const id = await collectionsRepository.create({ userId, value });
-  return await getById(id);
+  try {
+    const id = await collectionsRepository
+    .create({
+      userId,
+      value
+    });
+
+    return getById(id);
+  } catch (error) {
+    throw handleDBError(error);
+  }
 };
 
 const updateById = async (id, {userId}) => {
@@ -29,7 +41,8 @@ const updateById = async (id, {userId}) => {
     const existingUser = await usersRepository.getById(userId);
 
     if (!existingUser) {
-      throw new Error(`There is no user with id ${userId}.`, {userId});
+      //throw new Error(`There is no user with id ${userId}.`, {userId});
+      throw ServiceError.notFound(`There is no place with id ${id}.`, { id });
     }
   }
   await collectionsRepository.updateById(id, {id, userId,});

@@ -47,9 +47,25 @@ const updateCollection = async (ctx) => {
   });
 };
 
+updateCollection.validationScheme = {
+  params: Joi.object({
+    id: Joi.number().integer().positive(),
+  }),
+  body: {
+    userId: Joi.number().integer().positive(),
+    value: Joi.number().integer().positive(),
+  }
+}
+
 const deleteCollection = async (ctx) => {
   await CollectionService.deleteById(ctx.params.id);
   ctx.status = 204;
+};
+
+deleteCollection.validationScheme = {
+  params: Joi.object({
+    id: Joi.number().integer().positive(),
+  }),
 };
 
 
@@ -61,8 +77,8 @@ module.exports = (app) => {
   router.get('/', validate(getAllCollections.validationScheme), getAllCollections);
   router.get('/:id', validate(getCollectionById.validationScheme), getCollectionById);
   router.post('/', validate(createCollection.validationScheme), createCollection);
-  router.put('/:id', updateCollection);
-  router.delete('/:id', deleteCollection);
+  router.put('/:id', validate(updateCollection.validationScheme),updateCollection);
+  router.delete('/:id', validate(deleteCollection.validationScheme), deleteCollection);
 
   app.use(router.routes())
      .use(router.allowedMethods());

@@ -146,7 +146,7 @@ describe('Coin', () => {
     })
   });
 
-  describe('GET /api/users/:id', () => {
+  describe('GET /api/coins/:id', () => {
     beforeAll(async () => {
       await knex(tables.coin).insert(data.coins);
       await knex(tables.collection).insert(data.collections);

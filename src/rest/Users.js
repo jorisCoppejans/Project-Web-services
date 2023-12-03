@@ -15,7 +15,7 @@ const getUserById = async (ctx) => {
   ctx.body = await UserService.getById(Number(ctx.params.id));
 };
 
-getAllUsers.validationScheme = {
+getUserById.validationScheme = {
   params: Joi.object({
     id: Joi.number().integer().positive(),
   }),
@@ -54,9 +54,27 @@ const updateUser = async(ctx) => {
   })
 };
 
+updateUser.validationScheme = {
+  params: Joi.object({
+    id: Joi.number().integer().positive(),
+  }),
+  body: {
+    firstname: Joi.string().min(1),
+    lastname : Joi.string().min(1),
+    email: Joi.string().email(),
+    password: Joi.string().min(1),
+  }
+}
+
 const deleteUser = async (ctx) => {
   await UserService.deleteById(ctx.params.id);
   ctx.status = 204;
+};
+
+deleteUser.validationScheme = {
+  params: Joi.object({
+    id: Joi.number().integer().positive(),
+  }),
 };
 
 
@@ -68,8 +86,8 @@ module.exports = (app) => {
   router.get('/', validate(getAllUsers.validationScheme), getAllUsers);
   router.get('/:id', validate(getUserById.validationScheme), getUserById);
   router.post('/', validate(createUser.validationScheme), createUser);
-  router.put('/:id', updateUser);
-  router.delete('/:id', deleteUser);
+  router.put('/:id', validate(updateUser.validationScheme), updateUser);
+  router.delete('/:id', validate(deleteUser.validationScheme), deleteUser);
 
   app.use(router.routes())
      .use(router.allowedMethods());

@@ -88,6 +88,7 @@ describe('Collection', () => {
         value: 200.25,
       });
     });
+
   });
 
 

@@ -60,9 +60,27 @@ const updateCoin = async (ctx) => {
   ctx.body = updatedCoin;
 };
 
+updateCoin.validationScheme = {
+  params: Joi.object({
+    id: Joi.number().integer().positive(),
+  }),
+  body: {
+    name: Joi.string().min(1),
+    value: Joi.number().integer().positive(),
+    collectionId: Joi.number().integer().positive(),
+    favorite: Joi.boolean(),
+  }
+}
+
 const deleteCoin = async (ctx) => {
   await CoinService.deleteById(ctx.params.id);
   ctx.status = 204;
+};
+
+deleteCoin.validationScheme = {
+  params: Joi.object({
+    id: Joi.number().integer().positive(),
+  }),
 };
 
 module.exports = (app) => {
@@ -71,10 +89,10 @@ module.exports = (app) => {
   });
 
   router.get('/', validate(getAllCoins.validationScheme), getAllCoins);
-  router.get('/:id', validate(getAllCoins.validationScheme), getCoinById);
+  router.get('/:id', validate(getCoinById.validationScheme), getCoinById);
   router.post('/', validate(createCoin.validationScheme), createCoin);
-  router.put('/:id', updateCoin);
-  router.delete('/:id', deleteCoin);
+  router.put('/:id', validate(updateCoin.validationScheme), updateCoin);
+  router.delete('/:id', validate(deleteCoin.validationScheme), deleteCoin);
 
   app.use(router.routes())
      .use(router.allowedMethods());
