@@ -1,14 +1,25 @@
 const Router = require('@koa/router');
 const CoinService = require('../service/Coins');
+const Joi = require('joi');
+const validate = require('../core/validation');
 
 const getAllCoins = async(ctx) =>{
   ctx.body = await CoinService.getAll();
 };
 
+getAllCoins.validationScheme = null;
+
+
 const getCoinById = async (ctx) => {
   const gotCoins = await CoinService.getById(Number(ctx.params.id));
   gotCoins.favorite = Boolean(gotCoins.favorite)
   ctx.body = gotCoins;
+};
+
+getCoinById.validationScheme = {
+  params: Joi.object({
+    id: Joi.number().integer().positive(),
+  }),
 };
 
 
@@ -24,6 +35,16 @@ const createCoin = async (ctx) => {
   createdCoin.favorite = Boolean(createdCoin.favorite);
   ctx.status = 201;
   ctx.body = createdCoin;
+};
+
+createCoin.validationScheme = {
+  body: {
+    id: Joi.number().integer().positive(),
+    name: Joi.string().min(1),
+    value: Joi.number().integer().positive(),
+    collectionId: Joi.number().integer().positive(),
+    favorite: Joi.boolean(),
+  },
 };
 
 const updateCoin = async (ctx) => {
@@ -49,9 +70,9 @@ module.exports = (app) => {
     prefix: '/Coins',
   });
 
-  router.get('/', getAllCoins);
-  router.post('/', createCoin);
-  router.get('/:id', getCoinById);
+  router.get('/', validate(getAllCoins.validationScheme), getAllCoins);
+  router.get('/:id', validate(getAllCoins.validationScheme), getCoinById);
+  router.post('/', validate(createCoin.validationScheme), createCoin);
   router.put('/:id', updateCoin);
   router.delete('/:id', deleteCoin);
 

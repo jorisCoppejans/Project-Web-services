@@ -1,12 +1,23 @@
 const Router = require('@koa/router');
 const CollectionService = require('../service/Collections');
+const Joi = require('joi');
+const validate = require('../core/validation');
+
 
 const getAllCollections = async(ctx) =>{
   ctx.body = await CollectionService.getAll();
 };
 
+getAllCollections.validationScheme = null;
+
 const getCollectionById = async (ctx) => {
   ctx.body = await CollectionService.getById(Number(ctx.params.id));
+};
+
+getCollectionById.validationScheme = {
+  params: Joi.object({
+    id: Joi.number().integer().positive(),
+  }),
 };
 
 const createCollection = async (ctx) => {
@@ -17,6 +28,14 @@ const createCollection = async (ctx) => {
     value : Number(ctx.request.body.value)
   });
   ctx.status = 201;
+};
+
+createCollection.validationScheme = {
+  body: {
+    id: Joi.number().integer().positive(),
+    userId: Joi.number().integer().positive(),
+    value: Joi.number().integer().positive(),
+  },
 };
 
 const updateCollection = async (ctx) => {
@@ -39,9 +58,9 @@ module.exports = (app) => {
     prefix: '/Collections',
   });
 
-  router.get('/', getAllCollections);
-  router.post('/', createCollection);
-  router.get('/:id', getCollectionById);
+  router.get('/', validate(getAllCollections.validationScheme), getAllCollections);
+  router.get('/:id', validate(getCollectionById.validationScheme), getCollectionById);
+  router.post('/', validate(createCollection.validationScheme), createCollection);
   router.put('/:id', updateCollection);
   router.delete('/:id', deleteCollection);
 
