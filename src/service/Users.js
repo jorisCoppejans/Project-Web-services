@@ -23,12 +23,14 @@ const getById = async (id) => {
 
 const create = async ({ firstname, lastname, email, password }) => {
   try {
-    const id = await usersRepository
-    .create({
+    const passwordHash = await hashPassword(password);
+
+    const id = await usersRepository.create({
       firstname,
       lastname,
       email,
-      password
+      passwordHash,
+      roles: ['user'],
     });
 
     return getById(id);
@@ -37,7 +39,7 @@ const create = async ({ firstname, lastname, email, password }) => {
   }
 };
 
-const updateById = async (id, { firstname, lastname, email, password }) => {
+const updateById = async (id, { firstname, lastname, email, password, roles }) => {
   if (email) {
     const users = await usersRepository.getAll();
     const emails = users.map(u => u.email);
@@ -46,7 +48,7 @@ const updateById = async (id, { firstname, lastname, email, password }) => {
       throw ServiceError.validationFailed(`There is already a user with email: ${email}.`, { email });
     }
   }
-  user = await usersRepository.updateById(id, {firstname, lastname, email, password});
+  await usersRepository.updateById(id, {firstname, lastname, email, password, roles});
   return getById(id);
 };
 

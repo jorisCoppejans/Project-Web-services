@@ -43,23 +43,33 @@ const getById = async (id) => {
   return user && formatUser(user);
 };
 
-const create = async ({ firstname, lastname, email, password, }) => {
-  const [id] = await getKnex()(tables.user).insert({
-    firstname,
-    lastname,
-    email,
-    password,
-  });
-  return id;
+const create = async ({ firstname, lastname, email, password, roles }) => {
+  try{  
+    const [id] = await getKnex()(tables.user).insert({
+      firstname,
+      lastname,
+      email,
+      password,
+      roles,
+    });
+    return id;
+  }catch (error) {
+    getLogger().error('Error in create', {
+      error,
+    });
+    throw error;
+  }
+  
 };
 
-const updateById = async(id, {firstname, lastname, email, password,}) =>{
+const updateById = async(id, {firstname, lastname, email, password, roles}) =>{
   try{
     await getKnex()(tables.user).update({
       firstname,
       lastname,
       email,
       password,
+      roles,
     })
     .where (`${tables.user}.id`, id);
     return id;

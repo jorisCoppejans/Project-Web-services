@@ -4,6 +4,7 @@ const bodyParser = require('koa-bodyparser');
 const emoji = require('node-emoji')
 const { getLogger } = require('./logging');
 const ServiceError = require('./serviceError');
+const koaHelmet = require('koa-helmet');
 
 
 const CORS_ORIGINS = config.get('cors.origins');
@@ -12,6 +13,10 @@ const NODE_ENV = config.get('env');
 
 
 module.exports = async function installMiddleware(app) {
+  app.use(bodyParser());
+
+  app.use(koaHelmet());
+
   app.use(async (ctx, next) => {
     getLogger().info(`${emoji.get('fast_forward')} ${ctx.method} ${ctx.url}`);
   
