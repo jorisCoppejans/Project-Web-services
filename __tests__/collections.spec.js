@@ -217,6 +217,23 @@ describe('Collection', () => {
         userId: 5
       });
     });
+
+    it('should 404 when user does not exist', async () => {
+      const response = await request.post(url)
+        .send({
+          userId: 7,
+        });
+
+      expect(response.statusCode).toBe(404);
+      expect(response.body).toMatchObject({
+        code: 'NOT_FOUND',
+        message: 'No user with id 7 exists',
+        details: {
+          id: 7,
+        },
+      });
+      expect(response.body.stack).toBeTruthy();
+    });
   });
 
 
@@ -236,6 +253,28 @@ describe('Collection', () => {
       
       expect(response.statusCode).toBe(204);
       expect(response.body).toEqual({});
+    });
+
+    it('should 404 with not existing collection', async () => {
+      const response = await request.delete(`${url}/3`);
+
+      expect(response.statusCode).toBe(404);
+      expect(response.body).toMatchObject({
+        code: 'NOT_FOUND',
+        message: 'No collection with id 3 exists',
+        details: {
+          id: 3,
+        },
+      });
+      expect(response.body.stack).toBeTruthy();
+    });
+
+    it('should 400 with invalid collection id', async () => {
+      const response = await request.delete(`${url}/invalid`);
+
+      expect(response.statusCode).toBe(400);
+      expect(response.body.code).toBe('VALIDATION_FAILED');
+      expect(response.body.details.params).toHaveProperty('id');
     });
   });
 });
