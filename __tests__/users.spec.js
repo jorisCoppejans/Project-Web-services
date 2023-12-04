@@ -1,6 +1,7 @@
 const supertest = require('supertest');
 const createServer = require('../src/createServer');
 const {getKnex, tables} = require('../src/data');
+const Role = require('../src/core/roles');
 
 let server;
 let request;
@@ -22,22 +23,26 @@ const data = {
     firstname: 'Joris',
     lastname: 'Coppejans',
     email: 'joris.coppejans@yahoo.com',
-    password: 'abcd1234'
+    password: 'abcd1234',
+    roles: JSON.stringify([Role.ADMIN, Role.USER])
   },
   {
     id : 5,
     firstname: 'Stef',
     lastname: 'Roels',
     email: 'stef.roels@gmail.com',
-    password: 'abcd1234'
+    password: 'abcd1234',
+    roles: JSON.stringify([Role.USER])
   },
   {
     id : 6,
     firstname: 'Robbe',
     lastname: 'Vervaet',
     email: 'robbe.vervaet@gmail.com',
-    password: 'abcd1234'
-  },]
+    password: 'abcd1234',
+    roles: JSON.stringify([Role.USER])
+    },
+  ]
 };
 
 const url = '/api/users'

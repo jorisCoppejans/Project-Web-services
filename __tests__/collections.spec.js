@@ -1,6 +1,7 @@
 const supertest = require('supertest');
 const createServer = require('../src/createServer');
 const { getKnex, tables } = require('../src/data');
+const Role = require('../src/core/roles');
 
 let server;
 let request;
@@ -21,25 +22,28 @@ const data = {
   ],
   users: [
     {
-      id: 4,
-      firstname: 'Joris',
-      lastname: 'Coppejans',
-      email: 'joris.coppejans@yahoo.com',
-      password: 'abcd1234',
-    },
-    {
-      id: 5,
-      firstname: 'Stef',
-      lastname: 'Roels',
-      email: 'stef.roels@gmail.com',
-      password: 'abcd1234',
-    },
-    {
-      id: 6,
-      firstname: 'Robbe',
-      lastname: 'Vervaet',
-      email: 'robbe.vervaet@gmail.com',
-      password: 'abcd1234',
+    id : 4,
+    firstname: 'Joris',
+    lastname: 'Coppejans',
+    email: 'joris.coppejans@yahoo.com',
+    password: 'abcd1234',
+    roles: '["admin"]'
+  },
+  {
+    id : 5,
+    firstname: 'Stef',
+    lastname: 'Roels',
+    email: 'stef.roels@gmail.com',
+    password: 'abcd1234',
+    roles: '["user"]'
+  },
+  {
+    id : 6,
+    firstname: 'Robbe',
+    lastname: 'Vervaet',
+    email: 'robbe.vervaet@gmail.com',
+    password: 'abcd1234',
+    roles: '["user"]'
     },
   ],
 };

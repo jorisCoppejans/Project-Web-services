@@ -19,7 +19,7 @@ const formatUser = ({
   ...rest
 }) => ({
   ...rest,
-  id: id,
+  id,
   firstname,
   lastname,
   email,
@@ -50,7 +50,7 @@ const create = async ({ firstname, lastname, email, password, roles }) => {
       lastname,
       email,
       password,
-      roles,
+      roles: JSON.stringify(roles),
     });
     return id;
   }catch (error) {
@@ -59,7 +59,6 @@ const create = async ({ firstname, lastname, email, password, roles }) => {
     });
     throw error;
   }
-  
 };
 
 const updateById = async(id, {firstname, lastname, email, password, roles}) =>{
@@ -92,7 +91,9 @@ const deleteById = async (id) =>{
   }
 };
 
-
-module.exports = {
-  getById, getAll, create, updateById, deleteById
+const findByEmail = (email) => {
+  return getKnex()(tables.user).where('email', email).first();
 };
+
+
+module.exports = {getById, getAll, create, updateById, deleteById, findByEmail};
