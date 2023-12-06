@@ -23,12 +23,11 @@ const getById = async (id) => {
   return collection;
 };
 
-const create = async ({ userId, value }) => {
+const create = async ({ userId }) => {
   try {
     const id = await collectionsRepository
     .create({
-      userId,
-      value
+      userId
     });
 
     return getById(id);

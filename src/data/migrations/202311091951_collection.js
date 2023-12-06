@@ -6,6 +6,8 @@ module.exports = {
       table.increments('id').unsigned().notNullable();
       table.integer('userId').unsigned().notNullable();
       table.float('value', 8, 2).unsigned().notNullable();
+
+      table.foreign('userId').references('id').inTable(tables.users);
     })
   },
 

@@ -24,8 +24,7 @@ const createCollection = async (ctx) => {
   ctx.body = await CollectionService.create({
     ...ctx.request.body,
     id: Number(ctx.request.body.id),
-    userId: Number(ctx.request.body.userId),
-    value : Number(ctx.request.body.value)
+    userId: Number(ctx.request.body.userId)
   });
   ctx.status = 201;
 };

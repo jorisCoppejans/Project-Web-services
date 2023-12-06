@@ -8,6 +8,8 @@ module.exports = {
       table.float("value").unsigned().notNullable();
       table.integer("collectionId").unsigned().notNullable();
       table.boolean("favorite").notNullable();
+
+      table.foreign('collectionId').references('id').inTable(tables.collections);
     })
   },
 

@@ -42,7 +42,7 @@ const getById = async (id) => {
 const create = async ({ userId }) => {
   const [id] = await getKnex()(tables.collection).insert({
     userId, 
-    value : 0,
+    value : "0",
   });
   return id;
 };
