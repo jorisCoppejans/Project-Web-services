@@ -1,16 +1,18 @@
-const {tables} = require('../index');
+// user.js
+
+const { tables } = require('../index');
 
 module.exports = {
-  up: async(knex) =>{
+  up: async (knex) => {
     await knex.schema.createTableIfNotExists(tables.user, (table) => {
       table.increments("id").unsigned().notNullable();
       table.string("firstname", 255).notNullable();
       table.string("lastname", 255).notNullable();
       table.string("email", 255).notNullable();
-    })
+    });
   },
 
-  down:(knex) =>{
+  down: (knex) => {
     return knex.schema.dropTable(tables.user);
   }
 }

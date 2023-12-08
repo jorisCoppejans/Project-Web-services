@@ -3,6 +3,15 @@ const Role = require('../../core/roles');
 
 module.exports = {
   seed: async (knex) => {
+
+    const collectionIDs = await knex.select('id').from(tables.collection).pluck('id');
+    await knex(tables.coin).whereIn('collectionId', collectionIDs).delete();
+
+
+    const userIDs = await knex.select('id').from(tables.user).pluck('id');
+    await knex(tables.collection).whereIn('userId', userIDs).delete();
+
+    // Delete records from the users table
     await knex(tables.user).delete();
 
     await knex(tables.user).insert([
