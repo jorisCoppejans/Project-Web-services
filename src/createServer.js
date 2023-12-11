@@ -1,5 +1,6 @@
 const Koa = require("koa");
 const config = require("config");
+const logger = require("logger");
 
 const installRest = require("./rest");
 const { initializeData, shutdownData } = require("./data");
@@ -31,21 +32,17 @@ module.exports = async function createServer() {
   installRest(app);
 
   return {
-    getApp(){
+    getApp() {
       return app;
     },
-    start(){
+  
+    start() {
       return new Promise((resolve) => {
-        app.listen(9000, () => {
-          getLogger().info("🚀 Server listening on http://localhost:9000");
-        });
+        const port = config.get("port");
+        app.listen(port);
+        logger.info(`🚀 Server listening on http://localhost:${port}`);
         resolve();
       });
     },
-    async stop(){
-      app.removeAllListeners();
-      await shutdownData();
-      getLogger().info("Goodbye my friend");
-    }
   };
 };
