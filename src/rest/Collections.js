@@ -1,7 +1,8 @@
-const Router = require('@koa/router');
-const CollectionService = require('../service/Collections');
-const Joi = require('joi');
-const validate = require('../core/validation');
+const Router = require("@koa/router");
+const Joi = require("joi");
+
+const CollectionService = require("../service/Collections");
+const validate = require("../core/validation");
 
 
 const getAllCollections = async(ctx) =>{
@@ -54,7 +55,7 @@ updateCollection.validationScheme = {
     userId: Joi.number().integer().positive(),
     value: Joi.number().integer().positive(),
   }
-}
+};
 
 const deleteCollection = async (ctx) => {
   await CollectionService.deleteById(ctx.params.id);
@@ -70,15 +71,15 @@ deleteCollection.validationScheme = {
 
 module.exports = (app) => {
   const router = new Router({
-    prefix: '/Collections',
+    prefix: "/Collections",
   });
 
-  router.get('/', validate(getAllCollections.validationScheme), getAllCollections);
-  router.get('/:id', validate(getCollectionById.validationScheme), getCollectionById);
-  router.post('/', validate(createCollection.validationScheme), createCollection);
-  router.put('/:id', validate(updateCollection.validationScheme),updateCollection);
-  router.delete('/:id', validate(deleteCollection.validationScheme), deleteCollection);
+  router.get("/", validate(getAllCollections.validationScheme), getAllCollections);
+  router.get("/:id", validate(getCollectionById.validationScheme), getCollectionById);
+  router.post("/", validate(createCollection.validationScheme), createCollection);
+  router.put("/:id", validate(updateCollection.validationScheme),updateCollection);
+  router.delete("/:id", validate(deleteCollection.validationScheme), deleteCollection);
 
   app.use(router.routes())
-     .use(router.allowedMethods());
+    .use(router.allowedMethods());
 };

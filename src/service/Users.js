@@ -1,10 +1,11 @@
-const userRepository = require('../repository/user');
-const ServiceError = require('../core/serviceError');
-const handleDBError = require('./_handleDBError');
-const { hashPassword, verifyPassword } = require('../core/password');
-const Role = require('../core/roles');
-const { getLogger } = require('../core/logging');
-const { generateJWT, verifyJWT } = require('../core/jwt');
+const userRepository = require("../repository/user");
+const ServiceError = require("../core/serviceError");
+const { hashPassword, verifyPassword } = require("../core/password");
+const Role = require("../core/roles");
+const { getLogger } = require("../core/logging");
+const { generateJWT, verifyJWT } = require("../core/jwt");
+
+const handleDBError = require("./_handleDBError");
 
 
 const getAll = async () => {
@@ -104,7 +105,7 @@ const login = async (email, password) => {
   if (!user) {
     // DO NOT expose we don't know the user
     throw ServiceError.unauthorized(
-      'The given email and password do not match'
+      "The given email and password do not match"
     );
   }
 
@@ -113,7 +114,7 @@ const login = async (email, password) => {
   if (!passwordValid) {
     // DO NOT expose we know the user but an invalid password was given
     throw ServiceError.unauthorized(
-      'The given email and password do not match'
+      "The given email and password do not match"
     );
   }
 
@@ -122,11 +123,11 @@ const login = async (email, password) => {
 
 const checkAndParseSession = async (authHeader) => {
   if (!authHeader) {
-    throw ServiceError.unauthorized('You need to be signed in');
+    throw ServiceError.unauthorized("You need to be signed in");
   } 
 
-  if (!authHeader.startsWith('Bearer ')) {
-    throw ServiceError.unauthorized('Invalid authentication token');
+  if (!authHeader.startsWith("Bearer ")) {
+    throw ServiceError.unauthorized("Invalid authentication token");
   }
 
   const authToken = authHeader.substring(7);
@@ -145,7 +146,7 @@ const checkRole = (role, roles) => {
 
   if (!hasPermission) {
     throw ServiceError.forbidden(
-      'You are not allowed to view this part of the application'
+      "You are not allowed to view this part of the application"
     );
   }
 };

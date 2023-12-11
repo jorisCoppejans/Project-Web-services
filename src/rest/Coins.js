@@ -1,7 +1,8 @@
-const Router = require('@koa/router');
-const CoinService = require('../service/Coins');
-const Joi = require('joi');
-const validate = require('../core/validation');
+const Router = require("@koa/router");
+const Joi = require("joi");
+
+const CoinService = require("../service/Coins");
+const validate = require("../core/validation");
 
 const getAllCoins = async(ctx) =>{
   ctx.body = await CoinService.getAll();
@@ -12,7 +13,7 @@ getAllCoins.validationScheme = null;
 
 const getCoinById = async (ctx) => {
   const gotCoins = await CoinService.getById(Number(ctx.params.id));
-  gotCoins.favorite = Boolean(gotCoins.favorite)
+  gotCoins.favorite = Boolean(gotCoins.favorite);
   ctx.body = gotCoins;
 };
 
@@ -55,7 +56,7 @@ const updateCoin = async (ctx) => {
     value : Number(ctx.request.body.value),
     collectionId: Number(ctx.request.body.collectionId),
     favorite: ctx.request.body.favorite,
-  })
+  });
   updatedCoin.favorite = Boolean(updatedCoin.favorite);
   ctx.body = updatedCoin;
 };
@@ -70,7 +71,7 @@ updateCoin.validationScheme = {
     collectionId: Joi.number().integer().positive(),
     favorite: Joi.boolean(),
   }
-}
+};
 
 const deleteCoin = async (ctx) => {
   await CoinService.deleteById(ctx.params.id);
@@ -85,15 +86,15 @@ deleteCoin.validationScheme = {
 
 module.exports = (app) => {
   const router = new Router({
-    prefix: '/Coins',
+    prefix: "/Coins",
   });
 
-  router.get('/', validate(getAllCoins.validationScheme), getAllCoins);
-  router.get('/:id', validate(getCoinById.validationScheme), getCoinById);
-  router.post('/', validate(createCoin.validationScheme), createCoin);
-  router.put('/:id', validate(updateCoin.validationScheme), updateCoin);
-  router.delete('/:id', validate(deleteCoin.validationScheme), deleteCoin);
+  router.get("/", validate(getAllCoins.validationScheme), getAllCoins);
+  router.get("/:id", validate(getCoinById.validationScheme), getCoinById);
+  router.post("/", validate(createCoin.validationScheme), createCoin);
+  router.put("/:id", validate(updateCoin.validationScheme), updateCoin);
+  router.delete("/:id", validate(deleteCoin.validationScheme), deleteCoin);
 
   app.use(router.routes())
-     .use(router.allowedMethods());
+    .use(router.allowedMethods());
 };

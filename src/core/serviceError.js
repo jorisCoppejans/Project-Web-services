@@ -1,7 +1,7 @@
-const NOT_FOUND = 'NOT_FOUND';
-const VALIDATION_FAILED = 'VALIDATION_FAILED';
-const UNAUTHORIZED = 'UNAUTHORIZED';
-const FORBIDDEN = 'FORBIDDEN';
+const NOT_FOUND = "NOT_FOUND";
+const VALIDATION_FAILED = "VALIDATION_FAILED";
+const UNAUTHORIZED = "UNAUTHORIZED";
+const FORBIDDEN = "FORBIDDEN";
 
 
 class ServiceError extends Error {
@@ -9,7 +9,7 @@ class ServiceError extends Error {
     super(message);
     this.code = code;
     this.details = details;
-    this.name = 'ServiceError';
+    this.name = "ServiceError";
   }
 
   static notFound(message, details) {

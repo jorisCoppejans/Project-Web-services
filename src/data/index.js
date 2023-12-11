@@ -1,25 +1,27 @@
-const knex = require('knex');
-const { getLogger } = require('../core/logging'); 
-const { join } = require('path');
+const { join } = require("path");
 
-const config = require('config');
+const knex = require("knex");
+const config = require("config");
 
-const NODE_ENV = config.get('env');
-const isDevelopment = NODE_ENV === 'development';
+const { getLogger } = require("../core/logging"); 
 
-const DATABASE_CLIENT = config.get('database.client');
-const DATABASE_NAME = config.get('database.name');
-const DATABASE_HOST = config.get('database.host');
-const DATABASE_PORT = config.get('database.port');
-const DATABASE_USERNAME = config.get('database.username');
-const DATABASE_PASSWORD = config.get('database.password');
+
+const NODE_ENV = config.get("env");
+const isDevelopment = NODE_ENV === "development";
+
+const DATABASE_CLIENT = config.get("database.client");
+const DATABASE_NAME = config.get("database.name");
+const DATABASE_HOST = config.get("database.host");
+const DATABASE_PORT = config.get("database.port");
+const DATABASE_USERNAME = config.get("database.username");
+const DATABASE_PASSWORD = config.get("database.password");
 
 let knexInstance; 
 
 
 async function initializeData() {
   const logger = getLogger(); 
-  logger.info('Initializing connection to the database'); 
+  logger.info("Initializing connection to the database"); 
 
   
   const knexOptions = {
@@ -34,52 +36,52 @@ async function initializeData() {
     },
     debug: isDevelopment,
     migrations: {
-      tableName: 'knex_meta',
-      directory: join('src', 'data', 'migrations'),
+      tableName: "knex_meta",
+      directory: join("src", "data", "migrations"),
     },
     seeds: {
-      directory: join('src', 'data', 'seeds'),
+      directory: join("src", "data", "seeds"),
     },
   };
 
   knexInstance = knex(knexOptions);
  
   try {
-    await knexInstance.raw('SELECT 1+1 AS result');
-    await knexInstance.raw(`create database if not exists ${DATABASE_NAME}`)
+    await knexInstance.raw("SELECT 1+1 AS result");
+    await knexInstance.raw(`create database if not exists ${DATABASE_NAME}`);
 
     await knexInstance.destroy();
 
     knexOptions.connection.database = DATABASE_NAME;
     knexInstance = knex(knexOptions);
-    await knexInstance.raw('SELECT 1+1 AS result');
+    await knexInstance.raw("SELECT 1+1 AS result");
 
   } catch (error) {
     logger.error(error.message, { error }); 
-    throw Error('Could not initialize the data layer'); 
+    throw Error("Could not initialize the data layer"); 
   }
 
   try {
     await knexInstance.migrate.latest();
   } catch (error) {
-    logger.error('Error while migrating the database', {
+    logger.error("Error while migrating the database", {
       error,
     });
 
-    throw new Error('Migrations failed, check the logs');
+    throw new Error("Migrations failed, check the logs");
   }
 
   if (isDevelopment) {
     try {
       await knexInstance.seed.run();
     } catch (error) {
-      logger.error('Error while seeding database', {
+      logger.error("Error while seeding database", {
         error,
       });
     }
   }
 
-  logger.info('Successfully initialized connection to the database'); 
+  logger.info("Successfully initialized connection to the database"); 
 
   return knexInstance; 
 }
@@ -88,23 +90,23 @@ async function initializeData() {
 function getKnex() {
   if (!knexInstance)
     throw new Error(
-      'Please initialize the data layer before getting the Knex instance'
+      "Please initialize the data layer before getting the Knex instance"
     );
   return knexInstance;
 }
 
 
 const tables = Object.freeze({
-  collection: 'collections',
-  user: 'users',
-  coin: 'coins',
+  collection: "collections",
+  user: "users",
+  coin: "coins",
 });
 
 async function shutdownData(){
-  getLogger().info('shutting down database connection');
+  getLogger().info("shutting down database connection");
   await knexInstance.destroy();
   knexInstance = null;
-  getLogger().info('database conections closed');
+  getLogger().info("database conections closed");
 }
 
 module.exports = {

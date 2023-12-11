@@ -22,10 +22,13 @@
   "scripts": {
     "start": "env-cmd nodemon",
     "test": "env-cmd -f .env.test jest --runInBand",
-    "test:coverage": "env-cmd -f .env.test jest --runInBand --coverage"
+    "test:coverage": "env-cmd -f .env.test jest --runInBand --coverage",
+    "lint": "npx eslint . --fix"
   },
   "devDependencies": {
     "env-cmd": "^10.1.0",
+    "eslint": "^8.55.0",
+    "eslint-plugin-import": "^2.29.0",
     "jest": "^29.7.0",
     "nodemon": "^3.0.1",
     "supertest": "^6.3.3"

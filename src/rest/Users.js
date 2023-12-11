@@ -1,9 +1,10 @@
-const Router = require('@koa/router');
-const userService = require('../service/Users');
-const Joi = require('joi');
-const validate = require('../core/validation');
-const { requireAuthentication, makeRequireRole } = require('../core/auth');
-const Role = require('../core/roles');
+const Router = require("@koa/router");
+const Joi = require("joi");
+
+const userService = require("../service/Users");
+const validate = require("../core/validation");
+const { requireAuthentication, makeRequireRole } = require("../core/auth");
+const Role = require("../core/roles");
 
 
 const getAllUsers = async(ctx) =>{
@@ -33,7 +34,7 @@ const createUser = async (ctx) => {
     password: ctx.request.body.password,
   });
 
-  const token = await usersService.register(ctx.request.body);
+  const token = await userService.register(ctx.request.body);
   ctx.body = token;
   ctx.status = 201;
 };
@@ -56,7 +57,7 @@ const updateUser = async(ctx) => {
     lastname : ctx.request.body.lastname,
     email: ctx.request.body.email,
     password: ctx.request.body.password,
-  })
+  });
 };
 
 updateUser.validationScheme = {
@@ -69,7 +70,7 @@ updateUser.validationScheme = {
     email: Joi.string().email(),
     password: Joi.string().min(1),
   }
-}
+};
 
 const deleteUser = async (ctx) => {
   await userService.deleteById(ctx.params.id);
@@ -118,7 +119,7 @@ const checkUserId = (ctx, next) => {
       403,
       "You are not allowed to view this user's information",
       {
-        code: 'FORBIDDEN',
+        code: "FORBIDDEN",
       }
     );
   }
@@ -128,20 +129,20 @@ const checkUserId = (ctx, next) => {
 
 module.exports = (app) => {
   const router = new Router({
-    prefix: '/users',
+    prefix: "/users",
   });
 
-  router.post('/login', validate(login.validationScheme), login);
-  router.post('/register', validate(register.validationScheme), register);
+  router.post("/login", validate(login.validationScheme), login);
+  router.post("/register", validate(register.validationScheme), register);
 
   const requireAdmin = makeRequireRole(Role.ADMIN);
   
-  router.get('/', requireAuthentication, requireAdmin, validate(getAllUsers.validationScheme), getAllUsers);
-  router.get('/:id', requireAuthentication, validate(getUserById.validationScheme), checkUserId, getUserById);
-  router.post('/', requireAuthentication, validate(createUser.validationScheme), createUser);
-  router.put('/:id', requireAuthentication, validate(updateUser.validationScheme), checkUserId, updateUser);
-  router.delete('/:id', requireAuthentication, validate(deleteUser.validationScheme), checkUserId, deleteUser);
+  router.get("/", requireAuthentication, requireAdmin, validate(getAllUsers.validationScheme), getAllUsers);
+  router.get("/:id", requireAuthentication, validate(getUserById.validationScheme), checkUserId, getUserById);
+  router.post("/", requireAuthentication, validate(createUser.validationScheme), createUser);
+  router.put("/:id", requireAuthentication, validate(updateUser.validationScheme), checkUserId, updateUser);
+  router.delete("/:id", requireAuthentication, validate(deleteUser.validationScheme), checkUserId, deleteUser);
 
   app.use(router.routes())
-     .use(router.allowedMethods());
+    .use(router.allowedMethods());
 };

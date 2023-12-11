@@ -1,4 +1,4 @@
 module.exports = Object.freeze({
-  USER: 'user',
-  ADMIN: 'admin',
+  USER: "user",
+  ADMIN: "admin",
 });

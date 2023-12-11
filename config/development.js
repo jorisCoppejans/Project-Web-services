@@ -4,16 +4,16 @@ module.exports = {
     disabled : false
   },
   cors: {
-    origins: ['http://localhost:5173'],
+    origins: ["http://localhost:5173"],
     maxAge: 3 * 60 * 60,
   },
   database: {
-    client: 'mysql2',
-    host: 'localhost',
+    client: "mysql2",
+    host: "localhost",
     port: 3306,
-    name: 'project',
-    username: 'root',
-    password: '',
+    name: "project",
+    username: "root",
+    password: "",
   },
   auth: {
     argon: {
@@ -23,10 +23,10 @@ module.exports = {
       memoryCost: 2 ** 17,
     },
     jwt: {
-      secret: 'eenveeltemoeilijksecretdatniemandooitzalradenandersisdesitegehacked',
+      secret: "eenveeltemoeilijksecretdatniemandooitzalradenandersisdesitegehacked",
       expirationInterval: 60 * 60 * 1000, // ms (1 hour)
-      issuer: 'budget.hogent.be',
-      audience: 'budget.hogent.be',
+      issuer: "budget.hogent.be",
+      audience: "budget.hogent.be",
     },
   },
 };

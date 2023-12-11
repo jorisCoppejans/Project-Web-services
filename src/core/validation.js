@@ -1,11 +1,11 @@
-const Joi = require('joi');
+const Joi = require("joi");
 
 
 const cleanupJoiError = (
   error
 ) =>
   error.details.reduce((resultObj, { message, path, type }) => {
-    const joinedPath = path.join('.') || 'value';
+    const joinedPath = path.join(".") || "value";
     if (!resultObj[joinedPath]) {
       resultObj[joinedPath] = [];
     }
@@ -23,7 +23,7 @@ const JOI_OPTIONS = {
   allowUnknown: false,
   context: true,
   convert: true,
-  presence: 'required',
+  presence: "required",
 };
 
 const validate = (schema) => {
@@ -54,8 +54,8 @@ const validate = (schema) => {
     }
 
     if (Object.keys(errors).length) {
-      ctx.throw(400, 'Validation failed, check details for more information', {
-        code: 'VALIDATION_FAILED',
+      ctx.throw(400, "Validation failed, check details for more information", {
+        code: "VALIDATION_FAILED",
         details: errors,
       });
     }

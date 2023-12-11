@@ -1,8 +1,9 @@
-const Router = require('@koa/router');
-const installUserRouter = require('./Users');
-const installCollectionRouter = require('./Collections');
-const installCoinRouter = require('./Coins');
-const installHealthRouter = require('./health');
+const Router = require("@koa/router");
+
+const installUserRouter = require("./Users");
+const installCollectionRouter = require("./Collections");
+const installCoinRouter = require("./Coins");
+const installHealthRouter = require("./health");
 
 /**
  * Install all routes in the given Koa application.
@@ -12,7 +13,7 @@ const installHealthRouter = require('./health');
 
 module.exports = (app) => {
   const router = new Router({
-    prefix: '/api',
+    prefix: "/api",
   });
 
   installUserRouter(router);
@@ -21,5 +22,5 @@ module.exports = (app) => {
   installHealthRouter(router);
 
   app.use(router.routes())
-     .use(router.allowedMethods());
+    .use(router.allowedMethods());
 };

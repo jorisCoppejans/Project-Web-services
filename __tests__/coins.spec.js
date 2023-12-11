@@ -1,7 +1,8 @@
-const supertest = require('supertest');
-const createServer = require('../src/createServer');
-const {getKnex, tables} = require('../src/data');
-const Role = require('../src/core/roles');
+const supertest = require("supertest");
+
+const createServer = require("../src/createServer");
+const {getKnex, tables} = require("../src/data");
+const Role = require("../src/core/roles");
 
 
 let server;
@@ -11,28 +12,28 @@ let knex;
 const data = {
   coins: [{
     id: 1,
-    name: 'Bitcoin',
+    name: "Bitcoin",
     value: 34000,
     collectionId: 1,
     favorite: true,
   },
   {
     id: 2,
-    name: 'Ethereum',
+    name: "Ethereum",
     value: 1800,
     collectionId: 1,
     favorite: true, 
   },
   {
     id: 3,
-    name: 'BNB',
+    name: "BNB",
     value: 200,
     collectionId: 1,
     favorite: false, 
   },
   {
     id: 4,
-    name: 'Random',
+    name: "Random",
     value: 200,
     collectionId: 2,
     favorite: false, 
@@ -49,28 +50,28 @@ const data = {
   }],
   users: [{
     id : 4,
-    firstname: 'Joris',
-    lastname: 'Coppejans',
-    email: 'joris.coppejans@yahoo.com',
-    password: 'abcd1234',
-    roles: '["admin"]'
+    firstname: "Joris",
+    lastname: "Coppejans",
+    email: "joris.coppejans@yahoo.com",
+    password: "abcd1234",
+    roles: "[\"admin\"]"
   },
   {
     id : 5,
-    firstname: 'Stef',
-    lastname: 'Roels',
-    email: 'stef.roels@gmail.com',
-    password: 'abcd1234',
-    roles: '["user"]'
+    firstname: "Stef",
+    lastname: "Roels",
+    email: "stef.roels@gmail.com",
+    password: "abcd1234",
+    roles: "[\"user\"]"
   },
   {
     id : 6,
-    firstname: 'Robbe',
-    lastname: 'Vervaet',
-    email: 'robbe.vervaet@gmail.com',
-    password: 'abcd1234',
-    roles: '["user"]'
-    },
+    firstname: "Robbe",
+    lastname: "Vervaet",
+    email: "robbe.vervaet@gmail.com",
+    password: "abcd1234",
+    roles: "[\"user\"]"
+  },
   ]
 };
 
@@ -78,7 +79,7 @@ const convertToBoolean = (value) => {
   return value === 1 ? true : false;
 };
 
-const url = '/api/coins'
+const url = "/api/coins";
 
 const dataToDelete = {
   coins: [1, 2, 3, 4],
@@ -86,30 +87,30 @@ const dataToDelete = {
   users: [4, 5, 6]
 };
 
-describe('Coin', () => {
+describe("Coin", () => {
   
   beforeAll(async () => {
     server = await createServer();
     request = supertest(server.getApp().callback());
     knex = getKnex();
-  })
+  });
 
   afterAll(async () => {
     await server.stop();
   });
 
-  describe('GET /api/coins', () => {
+  describe("GET /api/coins", () => {
     beforeAll(async () => {
       await knex(tables.coin).insert(data.coins);
       await knex(tables.collection).insert(data.collections);
-    })
+    });
 
     afterAll(async () => {
-      await knex(tables.collection).whereIn('id', dataToDelete.collections).delete();
-      await knex(tables.coin).whereIn('id', dataToDelete.coins).delete();
-    })
+      await knex(tables.collection).whereIn("id", dataToDelete.collections).delete();
+      await knex(tables.coin).whereIn("id", dataToDelete.coins).delete();
+    });
 
-    it('should return 200 and all coins', async () => {
+    it("should return 200 and all coins", async () => {
       const response = await request.get(url);
       expect(response.status).toBe(200);
       expect(response.body.count).toBe(4);
@@ -117,7 +118,7 @@ describe('Coin', () => {
       response.body.items[0].favorite = convertToBoolean(response.body.items[0].favorite);
       expect(response.body.items[0]).toEqual({
         id: 1,
-        name: 'Bitcoin',
+        name: "Bitcoin",
         value: 34000,
         collectionId: 1,
         favorite: true,
@@ -126,7 +127,7 @@ describe('Coin', () => {
       response.body.items[1].favorite = convertToBoolean(response.body.items[1].favorite);
       expect(response.body.items[1]).toEqual({
         id: 2,
-        name: 'Ethereum',
+        name: "Ethereum",
         value: 1800,
         collectionId: 1,
         favorite: true, 
@@ -135,7 +136,7 @@ describe('Coin', () => {
       response.body.items[2].favorite = convertToBoolean(response.body.items[2].favorite);
       expect(response.body.items[2]).toEqual({
         id: 3,
-        name: 'BNB',
+        name: "BNB",
         value: 200,
         collectionId: 1,
         favorite: false, 
@@ -144,53 +145,53 @@ describe('Coin', () => {
       response.body.items[3].favorite = convertToBoolean(response.body.items[3].favorite);
       expect(response.body.items[3]).toEqual({
         id: 4,
-        name: 'Random',
+        name: "Random",
         value: 200,
         collectionId: 2,
         favorite: false, 
       });
     });
 
-    it('should 400 when given an argument', async () => {
+    it("should 400 when given an argument", async () => {
       const response = await request.get(`${url}?invalid=true`);
 
       expect(response.statusCode).toBe(400);
-      expect(response.body.code).toBe('VALIDATION_FAILED');
-      expect(response.body.details.query).toHaveProperty('invalid');
+      expect(response.body.code).toBe("VALIDATION_FAILED");
+      expect(response.body.details.query).toHaveProperty("invalid");
     });
   });
 
-  describe('GET /api/coins/:id', () => {
+  describe("GET /api/coins/:id", () => {
     beforeAll(async () => {
       await knex(tables.coin).insert(data.coins);
       await knex(tables.collection).insert(data.collections);
-    })
+    });
 
     afterAll(async () => {
-      await knex(tables.collection).whereIn('id', dataToDelete.collections).delete();
-      await knex(tables.coin).whereIn('id', dataToDelete.coins).delete();
-    })
+      await knex(tables.collection).whereIn("id", dataToDelete.collections).delete();
+      await knex(tables.coin).whereIn("id", dataToDelete.coins).delete();
+    });
 
-    it('should 200 and return the requested coin', async () => {
+    it("should 200 and return the requested coin", async () => {
       const response = await request.get(`${url}/4`);
 
       expect(response.statusCode).toBe(200);
       expect(response.body).toEqual({
         id: 4,
-        name: 'Random',
+        name: "Random",
         value: 200,
         collectionId: 2,
         favorite: false, 
       });
     });
 
-    it('should 404 when requesting not existing coin', async () => {
+    it("should 404 when requesting not existing coin", async () => {
       const response = await request.get(`${url}/7`);
   
       expect(response.statusCode).toBe(404);
       expect(response.body).toMatchObject({
-        code: 'NOT_FOUND',
-        message: 'No coin with id 7 exists',
+        code: "NOT_FOUND",
+        message: "No coin with id 7 exists",
         details: {
           id: 7,
         },
@@ -198,25 +199,25 @@ describe('Coin', () => {
       expect(response.body.stack).toBeTruthy();
     });
 
-    it('should 400 with invalid coin id', async () => {
+    it("should 400 with invalid coin id", async () => {
       const response = await request.get(`${url}/invalid`);
 
       expect(response.statusCode).toBe(400);
-      expect(response.body.code).toBe('VALIDATION_FAILED');
-      expect(response.body.details.params).toHaveProperty('id');
+      expect(response.body.code).toBe("VALIDATION_FAILED");
+      expect(response.body.details.params).toHaveProperty("id");
     });
   });
   
-  describe('POST /api/coins', () => {
+  describe("POST /api/coins", () => {
     const coinsToDelete = [];
 
     afterAll(async () => {
-      await knex(tables.coin).whereIn('id', coinsToDelete).delete();
+      await knex(tables.coin).whereIn("id", coinsToDelete).delete();
     });
 
-    it('should 201 and return the created coins', async () => {
+    it("should 201 and return the created coins", async () => {
       const response = await request.post(url).send({
-        name: 'Test',
+        name: "Test",
         value: 500,
         collectionId: 2,
         favorite: true, 
@@ -224,7 +225,7 @@ describe('Coin', () => {
     
       expect(response.status).toBe(201);
       expect(response.body.id).toBeTruthy();
-      expect(response.body.name).toBe('Test');
+      expect(response.body.name).toBe("Test");
       expect(response.body.value).toBe(500);
       expect(response.body.collectionId).toBe(2);
       expect(response.body.favorite).toBe(true);
@@ -232,7 +233,7 @@ describe('Coin', () => {
       coinsToDelete.push(response.body.id);
     });
 
-    it('should 404 when collection does not exist', async () => {
+    it("should 404 when collection does not exist", async () => {
       const response = await request.post(url)
         .send({
           name: "test",
@@ -243,8 +244,8 @@ describe('Coin', () => {
 
       expect(response.statusCode).toBe(404);
       expect(response.body).toMatchObject({
-        code: 'NOT_FOUND',
-        message: 'No collection with id 7 exists',
+        code: "NOT_FOUND",
+        message: "No collection with id 7 exists",
         details: {
           id: 7,
         },
@@ -252,7 +253,7 @@ describe('Coin', () => {
       expect(response.body.stack).toBeTruthy();
     });
 
-    it('should 400 when missing name', async () => {
+    it("should 400 when missing name", async () => {
       const response = await request.post(url)
         .send({
           value: 123, 
@@ -261,11 +262,11 @@ describe('Coin', () => {
         });
 
       expect(response.statusCode).toBe(400);
-      expect(response.body.code).toBe('VALIDATION_FAILED');
-      expect(response.body.details.body).toHaveProperty('amount');
+      expect(response.body.code).toBe("VALIDATION_FAILED");
+      expect(response.body.details.body).toHaveProperty("amount");
     });
 
-    it('should 400 when missing value', async () => {
+    it("should 400 when missing value", async () => {
       const response = await request.post(url)
         .send({
           name: "test", 
@@ -274,11 +275,11 @@ describe('Coin', () => {
         });
 
       expect(response.statusCode).toBe(400);
-      expect(response.body.code).toBe('VALIDATION_FAILED');
-      expect(response.body.details.body).toHaveProperty('amount');
+      expect(response.body.code).toBe("VALIDATION_FAILED");
+      expect(response.body.details.body).toHaveProperty("amount");
     });
 
-    it('should 400 when missing collection', async () => {
+    it("should 400 when missing collection", async () => {
       const response = await request.post(url)
         .send({
           name: "test", 
@@ -287,11 +288,11 @@ describe('Coin', () => {
         });
 
       expect(response.statusCode).toBe(400);
-      expect(response.body.code).toBe('VALIDATION_FAILED');
-      expect(response.body.details.body).toHaveProperty('amount');
+      expect(response.body.code).toBe("VALIDATION_FAILED");
+      expect(response.body.details.body).toHaveProperty("amount");
     });
 
-    it('should 400 when missing favorite', async () => {
+    it("should 400 when missing favorite", async () => {
       const response = await request.post(url)
         .send({
           name: "test", 
@@ -300,28 +301,28 @@ describe('Coin', () => {
         });
 
       expect(response.statusCode).toBe(400);
-      expect(response.body.code).toBe('VALIDATION_FAILED');
-      expect(response.body.details.body).toHaveProperty('amount');
+      expect(response.body.code).toBe("VALIDATION_FAILED");
+      expect(response.body.details.body).toHaveProperty("amount");
     });
   });
 
 
-  describe('PUT /api/coins/:id', () => {
+  describe("PUT /api/coins/:id", () => {
 
     beforeAll(async () => {
       await knex(tables.coin).insert(data.coins);
       await knex(tables.collection).insert(data.collections);
-    })
+    });
 
     afterAll(async () => {
-      await knex(tables.collection).whereIn('id', dataToDelete.collections).delete();
-      await knex(tables.coin).whereIn('id', dataToDelete.coins).delete();
-    })
+      await knex(tables.collection).whereIn("id", dataToDelete.collections).delete();
+      await knex(tables.coin).whereIn("id", dataToDelete.coins).delete();
+    });
 
-    it('should 200 and return the updated coin', async () => {
+    it("should 200 and return the updated coin", async () => {
       const response = await request.put(`${url}/4`)
         .send({
-          name: 'CoinChange',
+          name: "CoinChange",
           value : 159,
           collectionId : 2,
           favorite : true
@@ -330,14 +331,14 @@ describe('Coin', () => {
       expect(response.statusCode).toBe(200);
       expect(response.body).toEqual({
         id: 4,
-        name: 'CoinChange',
+        name: "CoinChange",
         value : 159,
         collectionId : 2,
         favorite : true
       });
     });
 
-    it('should 404 when collection does not exist', async () => {
+    it("should 404 when collection does not exist", async () => {
       const response = await request.post(url)
         .send({
           name: "test",
@@ -348,8 +349,8 @@ describe('Coin', () => {
 
       expect(response.statusCode).toBe(404);
       expect(response.body).toMatchObject({
-        code: 'NOT_FOUND',
-        message: 'No collection with id 7 exists',
+        code: "NOT_FOUND",
+        message: "No collection with id 7 exists",
         details: {
           id: 7,
         },
@@ -359,32 +360,32 @@ describe('Coin', () => {
   });
 
 
-  describe('DELETE /api/coins/:id', () => {
+  describe("DELETE /api/coins/:id", () => {
     beforeAll(async () => {
       await knex(tables.coin).insert(data.coins);
       await knex(tables.collection).insert(data.collections);
     });
 
     afterAll(async () => {
-      await knex(tables.coin).whereIn('id', dataToDelete.coins).delete();
-      await knex(tables.collection).whereIn('id', dataToDelete.collections).delete();
-      await knex(tables.user).whereIn('id', dataToDelete.users).delete();
+      await knex(tables.coin).whereIn("id", dataToDelete.coins).delete();
+      await knex(tables.collection).whereIn("id", dataToDelete.collections).delete();
+      await knex(tables.user).whereIn("id", dataToDelete.users).delete();
     });
 
-    it('should 204 and return nothing', async () => {
+    it("should 204 and return nothing", async () => {
       const response = await request.delete(`${url}/4`);
       
       expect(response.statusCode).toBe(204);
       expect(response.body).toEqual({});
     });
 
-    it('should 404 with not existing coin', async () => {
+    it("should 404 with not existing coin", async () => {
       const response = await request.delete(`${url}/5`);
 
       expect(response.statusCode).toBe(404);
       expect(response.body).toMatchObject({
-        code: 'NOT_FOUND',
-        message: 'No coin with id 5 exists',
+        code: "NOT_FOUND",
+        message: "No coin with id 5 exists",
         details: {
           id: 5,
         },
@@ -392,12 +393,12 @@ describe('Coin', () => {
       expect(response.body.stack).toBeTruthy();
     });
 
-    it('should 400 with invalid coin id', async () => {
+    it("should 400 with invalid coin id", async () => {
       const response = await request.delete(`${url}/invalid`);
 
       expect(response.statusCode).toBe(400);
-      expect(response.body.code).toBe('VALIDATION_FAILED');
-      expect(response.body.details.params).toHaveProperty('id');
+      expect(response.body.code).toBe("VALIDATION_FAILED");
+      expect(response.body.details.params).toHaveProperty("id");
     });
   });
 });  

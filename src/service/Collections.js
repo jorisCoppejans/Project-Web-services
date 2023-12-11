@@ -1,7 +1,8 @@
-const collectionsRepository = require('../repository/collection');
-const usersRepository = require('../repository/user');
-const ServiceError = require('../core/serviceError');
-const handleDBError = require('./_handleDBError');
+const collectionsRepository = require("../repository/collection");
+const usersRepository = require("../repository/user");
+const ServiceError = require("../core/serviceError");
+
+const handleDBError = require("./_handleDBError");
 
 
 const getAll = async () => {
@@ -26,9 +27,9 @@ const getById = async (id) => {
 const create = async ({ userId }) => {
   try {
     const id = await collectionsRepository
-    .create({
-      userId
-    });
+      .create({
+        userId
+      });
 
     return getById(id);
   } catch (error) {
@@ -47,7 +48,7 @@ const updateById = async (id, {userId}) => {
   }
   await collectionsRepository.updateById(id, {id, userId,});
   return getById(id);
-}
+};
 
 const deleteById = async (id) => {
   const deleted = await collectionsRepository.deleteById(id);
@@ -55,6 +56,6 @@ const deleteById = async (id) => {
   if (!deleted){
     throw ServiceError.notFound(`No collection with id ${id} exists`, { id });
   }
-}
+};
 
 module.exports = {getAll, create, getById, updateById, deleteById};

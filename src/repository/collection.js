@@ -1,5 +1,5 @@
-const { getLogger } = require('../core/logging');
-const { tables, getKnex } = require('../data/index');
+const { getLogger } = require("../core/logging");
+const { tables, getKnex } = require("../data/index");
 
 const SELECT_COLUMNS = [
   `${tables.collection}.id`,
@@ -20,7 +20,7 @@ const formatCollection = ({
 const getAll = async () => {
   return await getKnex()(tables.collection)
     .select(SELECT_COLUMNS)
-    .orderBy('id', 'ASC');
+    .orderBy("id", "ASC");
 };
 
 
@@ -52,10 +52,10 @@ const updateById = async(id, {userId}) =>{
     await getKnex()(tables.collection).update({
       userId
     })
-    .where (`${tables.collection}.id`, id);
+      .where (`${tables.collection}.id`, id);
     return id;
   } catch(error){
-    getLogger().error('Error in updateById', {error});
+    getLogger().error("Error in updateById", {error});
     throw error;
   }
 };
@@ -63,12 +63,12 @@ const updateById = async(id, {userId}) =>{
 const deleteById = async (id) =>{
   try{
     const rowsAffected = await getKnex()(tables.collection)
-    .where(`${tables.collection}.id`, id)
-    .delete();
+      .where(`${tables.collection}.id`, id)
+      .delete();
 
     return rowsAffected > 0;
   }catch(error){
-    getLogger().error('Error in updateById', {error});
+    getLogger().error("Error in updateById", {error});
     throw error;
   }
 };

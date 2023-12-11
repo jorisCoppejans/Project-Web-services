@@ -1,5 +1,5 @@
-const { tables, getKnex } = require('../data/index');
-const { getLogger } = require('../core/logging');
+const { tables, getKnex } = require("../data/index");
+const { getLogger } = require("../core/logging");
 
 const SELECT_COLUMNS = [
   `${tables.user}.id`,
@@ -29,9 +29,9 @@ const formatUser = ({
 
 const getAll = async () => {
   const users = await getKnex()(tables.user)
-  .select(SELECT_COLUMNS)
-  .orderBy('lastname', 'ASC');
-  return users
+    .select(SELECT_COLUMNS)
+    .orderBy("lastname", "ASC");
+  return users;
 };
 
 
@@ -54,7 +54,7 @@ const create = async ({ firstname, lastname, email, password, roles }) => {
     });
     return id;
   }catch (error) {
-    getLogger().error('Error in create', {
+    getLogger().error("Error in create", {
       error,
     });
     throw error;
@@ -70,10 +70,10 @@ const updateById = async(id, {firstname, lastname, email, password, roles}) =>{
       password,
       roles,
     })
-    .where (`${tables.user}.id`, id);
+      .where (`${tables.user}.id`, id);
     return id;
   } catch(error){
-    getLogger().error('Error in updateById', {error});
+    getLogger().error("Error in updateById", {error});
     throw error;
   }
 };
@@ -81,18 +81,18 @@ const updateById = async(id, {firstname, lastname, email, password, roles}) =>{
 const deleteById = async (id) =>{
   try{
     const rowsAffected = await getKnex()(tables.user)
-    .where(`${tables.user}.id`, id)
-    .delete();
+      .where(`${tables.user}.id`, id)
+      .delete();
 
     return rowsAffected > 0;
   }catch(error){
-    getLogger().error('Error in updateById', {error});
+    getLogger().error("Error in updateById", {error});
     throw error;
   }
 };
 
 const findByEmail = (email) => {
-  return getKnex()(tables.user).where('email', email).first();
+  return getKnex()(tables.user).where("email", email).first();
 };
 
 

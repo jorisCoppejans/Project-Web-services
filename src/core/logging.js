@@ -1,4 +1,4 @@
-const winston = require('winston');
+const winston = require("winston");
 const { combine, timestamp, colorize, printf } = winston.format;
 
 let rootLogger;
@@ -8,7 +8,7 @@ let rootLogger;
  */
 const getLogger = () => {
   if (!rootLogger) {
-    throw new Error('You must first initialize the logger');
+    throw new Error("You must first initialize the logger");
   }
 
   return rootLogger;
@@ -22,7 +22,7 @@ const loggerFormat = () => {
     level,
     message,
     timestamp,
-    name = 'server',
+    name = "server",
     ...rest
   }) =>
     `${timestamp} | ${name} | ${level} | ${message} | ${JSON.stringify(rest)}`;

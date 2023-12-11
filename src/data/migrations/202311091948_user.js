@@ -1,6 +1,6 @@
 // user.js
 
-const { tables } = require('../index');
+const { tables } = require("../index");
 
 module.exports = {
   up: async (knex) => {
@@ -15,4 +15,4 @@ module.exports = {
   down: (knex) => {
     return knex.schema.dropTable(tables.user);
   }
-}
+};

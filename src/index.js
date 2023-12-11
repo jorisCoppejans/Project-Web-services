@@ -1,4 +1,4 @@
-const createServer = require('./createServer.js')
+const createServer = require("./createServer.js");
 
 
 async function main() {
@@ -12,8 +12,8 @@ async function main() {
       process.exit(0);
     }
 
-    process.on('SIGTERM', onClose);
-    process.on('SIGQUIT', onClose);
+    process.on("SIGTERM", onClose);
+    process.on("SIGQUIT", onClose);
 
   } catch (error) {
     console.log(error);

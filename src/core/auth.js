@@ -1,4 +1,4 @@
-const userService = require('../service/Users');
+const userService = require("../service/Users");
 
 
 const requireAuthentication = async (ctx, next) => {

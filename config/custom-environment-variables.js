@@ -1,6 +1,6 @@
 module.exports = {
-  env: 'NODE_ENV',
+  env: "NODE_ENV",
   database : {
-    password : 'DATABASE_PASSWORD'
+    password : "DATABASE_PASSWORD"
   }
 };
