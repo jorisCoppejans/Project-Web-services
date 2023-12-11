@@ -1,9 +1,8 @@
 const Koa = require("koa");
 const config = require("config");
-const logger = require("logger");
 
 const installRest = require("./rest");
-const { initializeData, shutdownData } = require("./data");
+const { initializeData } = require("./data");
 const installMiddleware = require("./core/installMiddlewares");
 const { initializeLogger, getLogger } = require("./core/logging");
 
@@ -40,7 +39,7 @@ module.exports = async function createServer() {
       return new Promise((resolve) => {
         const port = config.get("port");
         app.listen(port);
-        logger.info(`🚀 Server listening on http://localhost:${port}`);
+        getLogger().info(`🚀 Server listening on http://localhost:${port}`);
         resolve();
       });
     },
