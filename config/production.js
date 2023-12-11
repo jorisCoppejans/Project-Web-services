@@ -4,7 +4,7 @@ module.exports = {
     disabled : false
   },
   cors: {
-    origins: ["http://localhost:5173"],
+    origins: ["https://front-end-joris-coppejans.onrender.com/"],
     maxAge: 3 * 60 * 60,
   },
   database: {
