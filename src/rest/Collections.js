@@ -1,18 +1,21 @@
 const Router = require("@koa/router");
 const Joi = require("joi");
 
+const { requireAuthentication } = require("../core/auth");
 const CollectionService = require("../service/Collections");
 const validate = require("../core/validation");
 
 
 const getAllCollections = async(ctx) =>{
-  ctx.body = await CollectionService.getAll();
+  const { userId } = ctx.state.session;
+  ctx.body = await CollectionService.getAll(userId);
 };
 
 getAllCollections.validationScheme = null;
 
 const getCollectionById = async (ctx) => {
-  ctx.body = await CollectionService.getById(Number(ctx.params.id));
+  const {userId} = ctx.state.session;
+  ctx.body = await CollectionService.getById(Number(ctx.params.id), userId);
 };
 
 getCollectionById.validationScheme = {
@@ -25,7 +28,7 @@ const createCollection = async (ctx) => {
   ctx.body = await CollectionService.create({
     ...ctx.request.body,
     id: Number(ctx.request.body.id),
-    userId: Number(ctx.request.body.userId)
+    userId: ctx.state.session.userId,
   });
   ctx.status = 201;
 };
@@ -42,7 +45,7 @@ const updateCollection = async (ctx) => {
   ctx.body = await CollectionService.updateById(Number(ctx.params.id), {
     ...ctx.request.body,
     id: Number(ctx.request.body.id),
-    userId: Number(ctx.request.body.userId),
+    userId: ctx.state.session.userId,
     value : Number(ctx.request.body.value)
   });
 };
@@ -58,7 +61,8 @@ updateCollection.validationScheme = {
 };
 
 const deleteCollection = async (ctx) => {
-  await CollectionService.deleteById(ctx.params.id);
+  const userId = ctx.state.session.userId;
+  await CollectionService.deleteById(ctx.params.id, userId);
   ctx.status = 204;
 };
 
@@ -74,12 +78,14 @@ module.exports = (app) => {
     prefix: "/Collections",
   });
 
+  router.use(requireAuthentication);
+
+
   router.get("/", validate(getAllCollections.validationScheme), getAllCollections);
   router.get("/:id", validate(getCollectionById.validationScheme), getCollectionById);
   router.post("/", validate(createCollection.validationScheme), createCollection);
   router.put("/:id", validate(updateCollection.validationScheme),updateCollection);
   router.delete("/:id", validate(deleteCollection.validationScheme), deleteCollection);
 
-  app.use(router.routes())
-    .use(router.allowedMethods());
+  app.use(router.routes()).use(router.allowedMethods());
 };

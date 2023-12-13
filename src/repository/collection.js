@@ -17,10 +17,18 @@ const formatCollection = ({
   userId: userId,
 });
 
-const getAll = async () => {
-  return await getKnex()(tables.collection)
+const getAll = async (userId) => {
+  const collections = await getKnex()(tables.collection)
+    .join(
+      tables.user,
+      `${tables.collection}.userId`,
+      "=",
+      `${tables.user}.id`
+    )
+    .where(`${tables.collection}.userId`, userId)
     .select(SELECT_COLUMNS)
     .orderBy("id", "ASC");
+  return collections.map(formatCollection);
 };
 
 
@@ -60,10 +68,11 @@ const updateById = async(id, {userId}) =>{
   }
 };
 
-const deleteById = async (id) =>{
+const deleteById = async (id, userId) =>{
   try{
     const rowsAffected = await getKnex()(tables.collection)
       .where(`${tables.collection}.id`, id)
+      .where(`${tables.collection}.user_id`, userId)
       .delete();
 
     return rowsAffected > 0;

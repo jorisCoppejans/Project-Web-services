@@ -5,19 +5,18 @@ const ServiceError = require("../core/serviceError");
 const handleDBError = require("./_handleDBError");
 
 
-const getAll = async () => {
-  const collections = await collectionsRepository.getAll();
+const getAll = async (userId) => {
+  const collections = await collectionsRepository.getAll(userId);
   return {
     count: collections.length,
     items: collections,
   };
 };
 
-const getById = async (id) => {
+const getById = async (id, userId) => {
   const collection = await collectionsRepository.getById(id);
 
-  if (!collection){
-    //throw Error(`No collection with id ${id} exists`, {id});
+  if (!collection || collection.user.id !== userId){
     throw ServiceError.notFound(`No collection with id ${id} exists`, { id });
   }
 
@@ -31,7 +30,7 @@ const create = async ({ userId }) => {
         userId
       });
 
-    return getById(id);
+    return getById(id, userId);
   } catch (error) {
     throw handleDBError(error);
   }
@@ -47,11 +46,11 @@ const updateById = async (id, {userId}) => {
     }
   }
   await collectionsRepository.updateById(id, {id, userId,});
-  return getById(id);
+  return getById(id, userId);
 };
 
-const deleteById = async (id) => {
-  const deleted = await collectionsRepository.deleteById(id);
+const deleteById = async (id, userId) => {
+  const deleted = await collectionsRepository.deleteById(id, userId);
 
   if (!deleted){
     throw ServiceError.notFound(`No collection with id ${id} exists`, { id });
