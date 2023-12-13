@@ -100,6 +100,7 @@ const register = async (ctx) => {
   ctx.body = token;
   ctx.status = 200;
 };
+
 register.validationScheme = {
   body: {
     firstname: Joi.string().max(255),

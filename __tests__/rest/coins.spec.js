@@ -1,9 +1,7 @@
 const supertest = require("supertest");
 
-const createServer = require("../src/createServer");
-const {getKnex, tables} = require("../src/data");
-const Role = require("../src/core/roles");
-
+const createServer = require("../../src/createServer");
+const {getKnex, tables} = require("../../src/data");
 
 let server;
 let request;

@@ -7,7 +7,7 @@ const ARGON_TIME_COST = config.get("auth.argon.timeCost");
 const ARGON_MEMORY_COST = config.get("auth.argon.memoryCost");
 
 const hashPassword = async (password) => {
-  const passwordHash = await argon2.hash(password, {
+  const passwordHash = await argon2.hash(String(password), {
     type: argon2.argon2id,
     saltLength: ARGON_SALT_LENGTH,
     hashLength: ARGON_HASH_LENGTH,

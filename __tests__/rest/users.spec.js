@@ -1,12 +1,6 @@
-const supertest = require("supertest");
-
-const createServer = require("../src/createServer");
-const {getKnex, tables} = require("../src/data");
-const Role = require("../src/core/roles");
-
-let server;
-let request;
-let knex;
+const { tables } = require("../src/data");
+const { withServer, login } = require("../supertest.setup");
+const { testAuthHeader } = require("../common/auth");
 
 const data = {
   collections: [{
@@ -19,64 +13,78 @@ const data = {
     userId : 5,
     value : 200.25
   }],
-  users: [{
-    id : 4,
-    firstname: "Joris",
-    lastname: "Coppejans",
-    email: "joris.coppejans@yahoo.com",
-    password: "abcd1234",
-    roles: JSON.stringify([Role.ADMIN, Role.USER])
-  },
-  {
-    id : 5,
-    firstname: "Stef",
-    lastname: "Roels",
-    email: "stef.roels@gmail.com",
-    password: "abcd1234",
-    roles: JSON.stringify([Role.USER])
-  },
-  {
-    id : 6,
-    firstname: "Robbe",
-    lastname: "Vervaet",
-    email: "robbe.vervaet@gmail.com",
-    password: "abcd1234",
-    roles: JSON.stringify([Role.USER])
-  },
-  ]
+  // users: [{
+  //   id : 4,
+  //   firstname: "Joris",
+  //   lastname: "Coppejans",
+  //   email: "joris.coppejans@yahoo.com",
+  //   password: "abcd1234",
+  //   roles: JSON.stringify([Role.ADMIN, Role.USER])
+  // },
+  // {
+  //   id : 5,
+  //   firstname: "Stef",
+  //   lastname: "Roels",
+  //   email: "stef.roels@gmail.com",
+  //   password: "abcd1234",
+  //   roles: JSON.stringify([Role.USER])
+  // },
+  // {
+  //   id : 6,
+  //   firstname: "Robbe",
+  //   lastname: "Vervaet",
+  //   email: "robbe.vervaet@gmail.com",
+  //   password: "abcd1234",
+  //   roles: JSON.stringify([Role.USER])
+  // },
+  // ]
 };
 
 const url = "/api/users";
 
 const dataToDelete = {
   collections: [1, 2],
-  users: [4, 5, 6]
+  // users: [4, 5, 6]
 };
 
 describe("Users", () => {
+
+  let request, knex, authHeader;
+
+  withServer(({
+    supertest,
+    knex: k,
+  }) => {
+    request = supertest;
+    knex = k;
+  });
   
   beforeAll(async () => {
-    server = await createServer();
-    request = supertest(server.getApp().callback());
-    knex = getKnex();
+    // server = await createServer();
+    // request = supertest(server.getApp().callback());
+    // knex = getKnex();
+
+    authHeader = await login(request);
+
   });
 
-  afterAll(async () => {
-    await server.stop();
-  });
+  // afterAll(async () => {
+  //   await server.stop();
+  // });
 
   describe("GET /api/users", () => {
     beforeAll(async () => {
-      await knex(tables.user).insert(data.users);
+      // await knex(tables.user).insert(data.users);
     });
 
     afterAll(async () => {
       await knex(tables.collection).whereIn("id", dataToDelete.collections).delete();
-      await knex(tables.user).whereIn("id", dataToDelete.users).delete();
+      // await knex(tables.user).whereIn("id", dataToDelete.users).delete();
     });
 
-    it("should return 200 and all users", async () => {
-      const response = await request.get(url);
+    test("it should 200 and return all transactions", async () => {
+      const response = await request.get(url)
+        .set("Authorization", authHeader);
       expect(response.status).toBe(200);
       expect(response.body.count).toBe(3);
       expect(response.body.items[0]).toEqual({
@@ -101,6 +109,33 @@ describe("Users", () => {
         password: "abcd1234"
       });
     });
+
+    // it("should return 200 and all users", async () => {
+    //   const response = await request.get(url);
+    //   // expect(response.status).toBe(200);
+    //   // expect(response.body.count).toBe(3);
+    //   // expect(response.body.items[0]).toEqual({
+    //   //   id : 4,
+    //   //   firstname: "Joris",
+    //   //   lastname: "Coppejans",
+    //   //   email: "joris.coppejans@yahoo.com",
+    //   //   password: "abcd1234"
+    //   // });
+    //   // expect(response.body.items[1]).toEqual({
+    //   //   id : 5,
+    //   //   firstname: "Stef",
+    //   //   lastname: "Roels",
+    //   //   email: "stef.roels@gmail.com",
+    //   //   password: "abcd1234"
+    //   // });
+    //   // expect(response.body.items[2]).toEqual({
+    //   //   id : 6,
+    //   //   firstname: "Robbe",
+    //   //   lastname: "Vervaet",
+    //   //   email: "robbe.vervaet@gmail.com",
+    //   //   password: "abcd1234"
+    //   // });
+    // });
 
     it("should 400 when given an argument", async () => {
       const response = await request.get(`${url}?invalid=true`);
@@ -308,4 +343,7 @@ describe("Users", () => {
       expect(response.body.details.params).toHaveProperty("id");
     });
   });
+
+  testAuthHeader(() => request.get(url));
+
 });  

@@ -1,7 +1,7 @@
 const supertest = require("supertest");
 
-const createServer = require("../src/createServer");
-const packageJson = require("../package.json");
+const createServer = require("../../src/createServer");
+const packageJson = require("../../package.json");
 
 describe("Health", () => {
   let server;

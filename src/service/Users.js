@@ -71,9 +71,9 @@ const register = async ({firstname, lastname, email, password}) => {
     const passwordHash = await hashPassword(password);
 
     const userId = await userRepository.create({
-      firstname,
-      lastname,
-      email,
+      firstname: firstname,
+      lastname: lastname,
+      email: email,
       password: passwordHash,
       roles: [Role.USER],
     });
