@@ -6,6 +6,7 @@ const CollectionService = require("../service/Collections");
 const validate = require("../core/validation");
 
 
+
 const getAllCollections = async(ctx) =>{
   const { userId } = ctx.state.session;
   ctx.body = await CollectionService.getAll(userId);
@@ -81,11 +82,11 @@ module.exports = (app) => {
   router.use(requireAuthentication);
 
 
-  router.get("/", validate(getAllCollections.validationScheme), getAllCollections);
-  router.get("/:id", validate(getCollectionById.validationScheme), getCollectionById);
-  router.post("/", validate(createCollection.validationScheme), createCollection);
-  router.put("/:id", validate(updateCollection.validationScheme),updateCollection);
-  router.delete("/:id", validate(deleteCollection.validationScheme), deleteCollection);
+  router.get("/", requireAuthentication, validate(getAllCollections.validationScheme), getAllCollections);
+  router.get("/:id", requireAuthentication, validate(getCollectionById.validationScheme), getCollectionById);
+  router.post("/", requireAuthentication, validate(createCollection.validationScheme), createCollection);
+  router.put("/:id", requireAuthentication, validate(updateCollection.validationScheme),updateCollection);
+  router.delete("/:id", requireAuthentication, validate(deleteCollection.validationScheme), deleteCollection);
 
   app.use(router.routes()).use(router.allowedMethods());
 };

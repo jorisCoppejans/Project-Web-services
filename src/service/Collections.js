@@ -13,10 +13,10 @@ const getAll = async (userId) => {
   };
 };
 
-const getById = async (id, userId) => {
+const getById = async (id) => {
   const collection = await collectionsRepository.getById(id);
 
-  if (!collection || collection.user.id !== userId){
+  if (!collection){
     throw ServiceError.notFound(`No collection with id ${id} exists`, { id });
   }
 
