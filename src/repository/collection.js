@@ -72,7 +72,7 @@ const deleteById = async (id, userId) =>{
   try{
     const rowsAffected = await getKnex()(tables.collection)
       .where(`${tables.collection}.id`, id)
-      .where(`${tables.collection}.user_id`, userId)
+      .where(`${tables.collection}.userId`, userId)
       .delete();
 
     return rowsAffected > 0;
