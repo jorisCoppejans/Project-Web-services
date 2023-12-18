@@ -19,6 +19,7 @@
     "mysql2": "^3.6.3",
     "node-emoji": "1.11.0",
     "swagger-jsdoc": "^6.2.8",
+    "swr": "^2.2.4",
     "winston": "^3.11.0"
   },
   "scripts": {

@@ -29,7 +29,7 @@ const getAll = async (userId) => {
     .select(SELECT_COLUMNS)
     .orderBy("id", "ASC");
   return collections.map(formatCollection);
-};
+};  
 
 
 const getById = async (id) => {
@@ -38,17 +38,23 @@ const getById = async (id) => {
     .select(SELECT_COLUMNS);
 
   if (Array.isArray(collection)) {
-    // If it's an array, return the first element
     return collection.length > 0 ? formatCollection(collection[0]) : null;
   } else {
-    // If it's not an array, assume it's an object and format accordingly
     return collection && formatCollection(collection);
   }
 };
 
 
 const create = async ({ userId }) => {
+  const highestId = await getKnex()(tables.collection)
+    .where({userId})
+    .max("id as maxId")
+    .first();
+
+  const nieuweId = (highestId && highestId.maxId) ? highestId.maxId + 1 : 1;
+
   const [id] = await getKnex()(tables.collection).insert({
+    id: nieuweId,
     userId, 
     value : "0",
   });
