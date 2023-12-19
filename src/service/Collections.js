@@ -24,11 +24,13 @@ const getById = async (id) => {
 };
 
 const create = async ({ userId }) => {
-  try {
-    const id = await collectionsRepository
-      .create({
-        userId
-      });
+  const existingUser = await usersRepository.getById(userId);
+  if (!existingUser) {
+    throw ServiceError.notFound(`There is no user with id ${userId}.`, { userId });
+  }
+
+  try{
+    const id = await collectionsRepository.create({userId});
 
     return getById(id, userId);
   } catch (error) {

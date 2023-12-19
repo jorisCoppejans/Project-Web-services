@@ -1,6 +1,7 @@
 const coinsRepository = require("../repository/coin");
 const {COLLECTIONS_DATA} = require("../data/mock_data");
 const ServiceError = require("../core/serviceError");
+const collectionRepository = require("../repository/collection");
 
 const handleDBError = require("./_handleDBError");
 
@@ -23,6 +24,12 @@ const getById = async (id) => {
 };
 
 const create = async ({ name, value, collectionId, favorite }) => {
+  const existingCollection = await collectionRepository.getById(collectionId);
+
+  if (!existingCollection){
+    throw ServiceError.notFound(`There is no collection with id ${collectionId}.`, { collectionId });
+  }
+
   try {
     const id = await coinsRepository
       .create({

@@ -38,7 +38,7 @@ createCollection.validationScheme = {
   body: {
     id: Joi.number().integer().positive(),
     userId: Joi.number().integer().positive(),
-    value: Joi.number().integer().positive(),
+    value: Joi.number().positive(),
   },
 };
 

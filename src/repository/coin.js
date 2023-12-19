@@ -43,7 +43,7 @@ const create = async ({name, value, collectionId, favorite, }) => {
     .first();
 
   const nieuweId = (highestId && highestId.maxId) ? highestId.maxId + 1 : 1;
-
+  console.log(nieuweId);
 
   const [id] = await getKnex()(tables.coin).insert({
     id: nieuweId,
@@ -52,6 +52,7 @@ const create = async ({name, value, collectionId, favorite, }) => {
     collectionId,
     favorite,
   });
+  console.log(id);
   return id;
 };
 

@@ -42,7 +42,7 @@ createCoin.validationScheme = {
   body: {
     id: Joi.number().integer().positive(),
     name: Joi.string().min(1),
-    value: Joi.number().integer().positive(),
+    value: Joi.number().positive(),
     collectionId: Joi.number().integer().positive(),
     favorite: Joi.boolean(),
   },
