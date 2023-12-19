@@ -1,5 +1,3 @@
-// user.js
-
 const { tables } = require("../index");
 
 module.exports = {

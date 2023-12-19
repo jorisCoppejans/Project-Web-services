@@ -51,7 +51,4 @@ const verifyJWT = (authToken) => {
   });
 };
 
-module.exports = {
-  generateJWT,
-  verifyJWT, 
-};
+module.exports = {generateJWT, verifyJWT};

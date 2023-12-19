@@ -3,9 +3,6 @@ const { combine, timestamp, colorize, printf } = winston.format;
 
 let rootLogger;
 
-/**
- * Get the root logger.
- */
 const getLogger = () => {
   if (!rootLogger) {
     throw new Error("You must first initialize the logger");
@@ -14,9 +11,6 @@ const getLogger = () => {
   return rootLogger;
 };
 
-/**
- * Define the logging format. We output a timestamp, context (name), level, message and the stacktrace in case of an error
- */
 const loggerFormat = () => {
   const formatMessage = ({
     level,
@@ -42,11 +36,7 @@ const loggerFormat = () => {
  * @param {boolean} options.disabled - Disable all logging.
  * @param {object} options.defaultMeta - Default metadata to show.
  */
-const initializeLogger = ({
-  level,
-  disabled = false,
-  defaultMeta = {}
-}) => {
+const initializeLogger = ({level,disabled = false,defaultMeta = {}}) => {
   rootLogger = winston.createLogger({
     level,
     format: loggerFormat(),
@@ -61,7 +51,4 @@ const initializeLogger = ({
   return rootLogger;
 };
 
-module.exports = {
-  initializeLogger,
-  getLogger,
-};
+module.exports = {initializeLogger, getLogger};

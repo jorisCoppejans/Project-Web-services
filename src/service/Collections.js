@@ -43,7 +43,6 @@ const updateById = async (id, {userId}) => {
     const existingUser = await usersRepository.getById(userId);
 
     if (!existingUser) {
-      //throw new Error(`There is no user with id ${userId}.`, {userId});
       throw ServiceError.notFound(`There is no user with id ${id}.`, { id });
     }
   }
@@ -58,5 +57,6 @@ const deleteById = async (id, userId) => {
     throw ServiceError.notFound(`No collection with id ${id} exists`, { id });
   }
 };
+
 
 module.exports = {getAll, create, getById, updateById, deleteById};

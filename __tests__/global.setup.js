@@ -13,7 +13,6 @@ module.exports = async () => {
   });
   await initializeData();
 
-  // Insert a test user with password 12345678
   const knex = getKnex();
 
   await knex(tables.user).insert([
@@ -23,7 +22,8 @@ module.exports = async () => {
       lastname: "User",
       email: "test.user@hogent.be",
       password_hash:
-        "$argon2id$v=19$m=2048,t=2,p=1$NF6PFLTgSYpDSex0iFeFQQ$Rz5ouoM9q3EH40hrq67BC3Ajsu/ohaHnkKBLunELLzU",
+        "$argon2id$v=19$m=2048,t=2,p=1$NF6PFLTgSYpDSex0iFeFQQ$Rz5ouoM9q3EH40hrq67BC3Ajsu/ohaHnkKBLunELLzU", 
+      //is 12345678
       roles: JSON.stringify([Role.USER])
     },
     {

@@ -9,11 +9,7 @@ const cleanupJoiError = (
     if (!resultObj[joinedPath]) {
       resultObj[joinedPath] = [];
     }
-    resultObj[joinedPath].push({
-      type,
-      message,
-    });
-
+    resultObj[joinedPath].push({type, message});
     return resultObj;
   }, {});
 

@@ -11,12 +11,18 @@ const ServiceError = require("./serviceError");
 const CORS_ORIGINS = config.get("cors.origins");
 const CORS_MAX_AGE = config.get("cors.maxAge");
 const NODE_ENV = config.get("env");
+const isDevelopment = NODE_ENV==="development";
+
 
 
 module.exports = async function installMiddleware(app) {
   app.use(bodyParser());
 
-  app.use(koaHelmet());
+  app.use(
+    koaHelmet({
+      contentSecurityPolicy: isDevelopment ? false : undefined,
+    })
+  );
 
   app.use(async (ctx, next) => {
     getLogger().info(`${emoji.get("fast_forward")} ${ctx.method} ${ctx.url}`);
@@ -55,8 +61,6 @@ module.exports = async function installMiddleware(app) {
   );
 
   app.use(bodyParser());
-
-
 
   app.use(async (ctx, next) => {
     try {

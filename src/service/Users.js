@@ -83,27 +83,22 @@ const register = async ({firstname, lastname, email, password}) => {
   }
 };
 
-const makeExposedUser = ({ id, firstname, lastname, email, roles }) => ({
-  id,
-  firstname,
-  lastname,
-  email,
-  roles,
-});
+const makeExposedUser = ({ id, firstname, lastname, email, roles }) => (
+  {id,firstname, lastname, email, roles}
+);
 
 
 const makeLoginData = async (user) => {
   const token = await generateJWT(user);
   return {
     user: makeExposedUser(user),
-    token,
+    token
   };
 };
 
 const login = async (email, password) => {
   const user = await userRepository.findByEmail(email);
   if (!user) {
-    // DO NOT expose we don't know the user
     throw ServiceError.unauthorized(
       "The given email and password do not match"
     );
@@ -112,7 +107,6 @@ const login = async (email, password) => {
   const passwordValid = await verifyPassword(password, user.password);
 
   if (!passwordValid) {
-    // DO NOT expose we know the user but an invalid password was given
     throw ServiceError.unauthorized(
       "The given email and password do not match"
     );

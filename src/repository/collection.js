@@ -7,15 +7,9 @@ const SELECT_COLUMNS = [
   `${tables.collection}.value`,
 ];
 
-const formatCollection = ({
-  id, 
-  userId,
-  ...rest
-}) => ({
-  ...rest,
-  id: id,
-  userId: userId,
-});
+const formatCollection = ({id, userId, ...rest}) => (
+  {...rest, id: id, userId: userId}
+);
 
 const getAll = async (userId) => {
   const collections = await getKnex()(tables.collection)
@@ -89,6 +83,4 @@ const deleteById = async (id, userId) =>{
 };
 
 
-module.exports = {
-  getById, getAll, create, updateById, deleteById
-};
+module.exports = {getById, getAll, create, updateById, deleteById};

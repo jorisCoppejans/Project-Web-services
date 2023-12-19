@@ -9,6 +9,7 @@
     "@koa/router": "^12.0.1",
     "argon2": "^0.31.2",
     "config": "^3.3.9",
+    "express": "^4.18.2",
     "joi": "^17.11.0",
     "jsonwebtoken": "^9.0.2",
     "knex": "^3.1.0",
@@ -19,6 +20,7 @@
     "mysql2": "^3.6.3",
     "node-emoji": "1.11.0",
     "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.0",
     "swr": "^2.2.4",
     "winston": "^3.11.0"
   },

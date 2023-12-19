@@ -5,9 +5,7 @@ module.exports = {
   seed: async (knex) => {
 
     await knex(tables.coin).delete();
-
     await knex(tables.collection).delete();
-    // Delete records from the users table
     await knex(tables.user).delete();
 
     await knex(tables.user).insert([

@@ -1,5 +1,4 @@
 const coinsRepository = require("../repository/coin");
-const {COLLECTIONS_DATA} = require("../data/mock_data");
 const ServiceError = require("../core/serviceError");
 const collectionRepository = require("../repository/collection");
 
@@ -47,7 +46,7 @@ const create = async ({ name, value, collectionId, favorite }) => {
 
 const updateById = async (id, {name, value, collectionId, favorite}) => {
   if (collectionId) {
-    const existingCollection = COLLECTIONS_DATA.find((collection) => collection.id === collectionId);
+    const existingCollection = await collectionRepository.getAll((collection) => collection.id === collectionId).find;
 
     if (!existingCollection) {
       throw ServiceError.notFound(`There is no collection with id ${id}.`, { id });
@@ -64,5 +63,6 @@ const deleteById = async (id) => {
     throw ServiceError.notFound(`No coin with id ${id} exists`, { id });
   }
 };
+
 
 module.exports = {getAll, create, getById, updateById, deleteById};

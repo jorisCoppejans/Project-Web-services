@@ -114,7 +114,6 @@ const checkUserId = (ctx, next) => {
   const { userId, roles } = ctx.state.session;
   const { id } = ctx.params;
 
-  // You can only get our own data unless you're an admin
   if (id !== userId && !roles.includes(Role.ADMIN)) {
     return ctx.throw(
       403,

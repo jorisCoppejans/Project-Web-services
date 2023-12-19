@@ -6,8 +6,6 @@ async function main() {
   console.log("The password:", password);
 
   const hash = await hashPassword(password);
-  // bekijk hoe de hash opgebouwd is, wat herken je?
-  // waar staat de timeCost, memoryCost, salt en de hash zelf?
   console.log("The hash:", hash);
 
   let valid = await verifyPassword(password, hash);

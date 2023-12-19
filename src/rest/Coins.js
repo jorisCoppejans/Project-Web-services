@@ -19,7 +19,7 @@ const getCoinById = async (ctx) => {
 
 getCoinById.validationScheme = {
   params: Joi.object({
-    id: Joi.number().integer().positive(),
+    id: Joi.number().integer(),
   }),
 };
 
@@ -40,10 +40,10 @@ const createCoin = async (ctx) => {
 
 createCoin.validationScheme = {
   body: {
-    id: Joi.number().integer().positive(),
+    id: Joi.number().integer(),
     name: Joi.string().min(1),
-    value: Joi.number().positive(),
-    collectionId: Joi.number().integer().positive(),
+    value: Joi.number().positive().required().messages({"number.positive": "value must be an positive"}),
+    collectionId: Joi.number().integer(),
     favorite: Joi.boolean(),
   },
 };
@@ -63,12 +63,12 @@ const updateCoin = async (ctx) => {
 
 updateCoin.validationScheme = {
   params: Joi.object({
-    id: Joi.number().integer().positive(),
+    id: Joi.number().integer(),
   }),
   body: {
     name: Joi.string().min(1),
     value: Joi.number().integer().positive(),
-    collectionId: Joi.number().integer().positive(),
+    collectionId: Joi.number().integer(),
     favorite: Joi.boolean(),
   }
 };

@@ -9,19 +9,9 @@ const SELECT_COLUMNS = [
   `${tables.coin}.favorite`,
 ];
 
-const formatCoin = ({
-  id,
-  name,
-  value,
-  collectionId,
-  favorite,
-}) => ({
-  id,
-  name,
-  value,
-  collectionId,
-  favorite,
-});
+const formatCoin = ({id,name,value,collectionId,favorite}) => (
+  {id, name, value, collectionId, favorite}
+);
 
 const getAll = async () => {
   return await getKnex()(tables.coin)
@@ -43,7 +33,6 @@ const create = async ({name, value, collectionId, favorite, }) => {
     .first();
 
   const nieuweId = (highestId && highestId.maxId) ? highestId.maxId + 1 : 1;
-  console.log(nieuweId);
 
   const [id] = await getKnex()(tables.coin).insert({
     id: nieuweId,
@@ -52,7 +41,6 @@ const create = async ({name, value, collectionId, favorite, }) => {
     collectionId,
     favorite,
   });
-  console.log(id);
   return id;
 };
 
@@ -86,6 +74,4 @@ const deleteById = async (id) =>{
 };
 
 
-module.exports = {
-  getById, getAll, create, updateById, deleteById
-};
+module.exports = {getById, getAll, create, updateById, deleteById};

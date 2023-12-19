@@ -10,21 +10,9 @@ const SELECT_COLUMNS = [
 ];
 
 
-const formatUser = ({
-  id,
-  firstname,
-  lastname,
-  email,
-  password,
-  ...rest
-}) => ({
-  ...rest,
-  id,
-  firstname,
-  lastname,
-  email,
-  password,
-});
+const formatUser = ({id, firstname, lastname, email, password, ...rest}) => (
+  {...rest, id, firstname, lastname, email, password}
+);
 
 
 const getAll = async () => {

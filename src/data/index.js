@@ -109,9 +109,4 @@ async function shutdownData(){
   getLogger().info("database conections closed");
 }
 
-module.exports = {
-  initializeData, 
-  getKnex, 
-  tables,
-  shutdownData,
-};
+module.exports = {initializeData, getKnex, tables, shutdownData};
