@@ -100,6 +100,7 @@ const tables = Object.freeze({
   collection: "collections",
   user: "users",
   coin: "coins",
+  apicoin: "apiCoins",
 });
 
 async function shutdownData(){
