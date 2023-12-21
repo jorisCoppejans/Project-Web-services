@@ -1,7 +1,6 @@
 const { tables } = require("../../src/data");
 const { withServer, login } = require("../supertest.setup");
 const { testAuthHeader } = require("../common/auth");
-const Role = require("../../src/core/roles");
 
 
 const data = {
@@ -72,9 +71,9 @@ describe("Collection", () => {
     authHeader = await login(request);
   });
 
-  afterAll(async () => {
-    // await server.stop();
-  });
+  // afterAll(async () => {
+  //   await server.stop();
+  // });
 
   describe("GET /api/collections", () => {
     beforeAll(async () => {
@@ -91,25 +90,18 @@ describe("Collection", () => {
       const response = await request.get(url)
         .set("Authorization", authHeader);
 
+      expect(response.status).toBe(200);
+      expect(response.body.count).toBe(2);
       expect(response.body.items[0]).toEqual({
-        id: 5,
-        firstname: "Test",
-        lastname: "User",
-        email: "test.user@hogent.be",
-        password_hash:
-          "$argon2id$v=19$m=2048,t=2,p=1$NF6PFLTgSYpDSex0iFeFQQ$Rz5ouoM9q3EH40hrq67BC3Ajsu/ohaHnkKBLunELLzU",
-        roles: JSON.stringify([Role.USER]),
+        id: 1,
+        userId: 4,
+        value: 100000,
       });
-      expect(response.body.items[1]).toEqual(
-        {
-          id: 4,
-          firstname: "Admin",
-          lastname: "User",
-          email: "admin.user@hogent.be",
-          password_hash:
-          "$argon2id$v=19$m=2048,t=2,p=1$NF6PFLTgSYpDSex0iFeFQQ$Rz5ouoM9q3EH40hrq67BC3Ajsu/ohaHnkKBLunELLzU",
-          roles: JSON.stringify([Role.ADMIN, Role.USER]),
-        });
+      expect(response.body.items[1]).toEqual({
+        id: 2,
+        userId: 5,
+        value: 200.25,
+      });
     });
 
     // it("should return 200 and all collections", async () => {
@@ -129,7 +121,8 @@ describe("Collection", () => {
     // });
 
     it("should 400 when given an argument", async () => {
-      const response = await request.get(`${url}?invalid=true`);
+      const response = await request.get(`${url}?invalid=true`)
+        .set("Authorization", authHeader);
 
       expect(response.statusCode).toBe(400);
       expect(response.body.code).toBe("VALIDATION_FAILED");
@@ -143,17 +136,18 @@ describe("Collection", () => {
 
   describe("GET /api/collections/:id", () => {
     beforeAll(async () => {
-      await knex(tables.user).insert(data.users);
+      // await knex(tables.user).insert(data.users);
       await knex(tables.collection).insert(data.collections);
     });
 
     afterAll(async () => {
       await knex(tables.collection).whereIn("id", dataToDelete.collections).delete();
-      await knex(tables.user).whereIn("id", dataToDelete.users).delete();
+      // await knex(tables.user).whereIn("id", dataToDelete.users).delete();
     });
 
     it("should 200 and return the requested collection", async () => {
-      const response = await request.get(`${url}/1`);
+      const response = await request.get(`${url}/1`)
+        .set("Authorization", authHeader);
 
       expect(response.statusCode).toBe(200);
       expect(response.body).toEqual({
@@ -164,7 +158,8 @@ describe("Collection", () => {
     });
 
     it("should 404 when requesting not existing collection", async () => {
-      const response = await request.get(`${url}/4`);
+      const response = await request.get(`${url}/4`)
+        .set("Authorization", authHeader);
   
       expect(response.statusCode).toBe(404);
       expect(response.body).toMatchObject({
@@ -178,12 +173,16 @@ describe("Collection", () => {
     });
 
     it("should 400 with invalid collection id", async () => {
-      const response = await request.get(`${url}/invalid`);
+      const response = await request.get(`${url}/invalid`)
+        .set("Authorization", authHeader);
 
       expect(response.statusCode).toBe(400);
       expect(response.body.code).toBe("VALIDATION_FAILED");
       expect(response.body.details.params).toHaveProperty("id");
     });
+
+    testAuthHeader(() => request.get(`${url}/4`));
+
   });
 
 
@@ -195,10 +194,12 @@ describe("Collection", () => {
     });
 
     it("should 200 and return the created collection", async () => {
-      const response = await request.post(url).send({
-        userId: 4,
-        value: 0,
-      });
+      const response = await request.post(url)
+        .set("Authorization", authHeader)
+        .send({
+          userId: 4,
+          value: 0,
+        });
 
       expect(response.status).toBe(201);
       expect(response.body.id).toBeTruthy();
@@ -210,6 +211,7 @@ describe("Collection", () => {
 
     it("should 404 when user does not exist", async () => {
       const response = await request.post(url)
+        .set("Authorization", authHeader)
         .send({
           userId: 7,
         });
@@ -227,12 +229,16 @@ describe("Collection", () => {
 
     it("should 400 when missing user", async () => {
       const response = await request.post(url)
+        .set("Authorization", authHeader)
         .send({});
 
       expect(response.statusCode).toBe(400);
       expect(response.body.code).toBe("VALIDATION_FAILED");
       expect(response.body.details.body).toHaveProperty("amount");
     });
+
+    testAuthHeader(() => request.post(url));
+
   });
 
   describe("PUT /api/collections/:id", () => {
@@ -248,6 +254,7 @@ describe("Collection", () => {
 
     it("should 200 and return the updated collection", async () => {
       const response = await request.put(`${url}/1`)
+        .set("Authorization", authHeader)
         .send({
           userId: 5,
         });
@@ -262,6 +269,7 @@ describe("Collection", () => {
 
     it("should 404 when user does not exist", async () => {
       const response = await request.post(url)
+        .set("Authorization", authHeader)
         .send({
           userId: 7,
         });
@@ -276,6 +284,9 @@ describe("Collection", () => {
       });
       expect(response.body.stack).toBeTruthy();
     });
+
+    testAuthHeader(() => request.put(`${url}/1`));
+
   });
 
 
@@ -287,18 +298,22 @@ describe("Collection", () => {
 
     afterAll(async () => {
       await knex(tables.collection).whereIn("id", dataToDelete.collections).delete();
-      await knex(tables.user).whereIn("id", dataToDelete.users).delete();
+      // await knex(tables.user).whereIn("id", dataToDelete.users).delete();
     });
 
     it("should 204 and return nothing", async () => {
-      const response = await request.delete(`${url}/2`);
+      const response = await request
+        .delete(`${url}/2`)
+        .set("Authorization", authHeader);
       
       expect(response.statusCode).toBe(204);
       expect(response.body).toEqual({});
     });
 
     it("should 404 with not existing collection", async () => {
-      const response = await request.delete(`${url}/3`);
+      const response = await request
+        .delete(`${url}/3`)
+        .set("Authorization", authHeader);
 
       expect(response.statusCode).toBe(404);
       expect(response.body).toMatchObject({
@@ -312,11 +327,16 @@ describe("Collection", () => {
     });
 
     it("should 400 with invalid collection id", async () => {
-      const response = await request.delete(`${url}/invalid`);
+      const response = await request
+        .delete(`${url}/invalid`)
+        .set("Authorization", authHeader);
 
       expect(response.statusCode).toBe(400);
       expect(response.body.code).toBe("VALIDATION_FAILED");
       expect(response.body.details.params).toHaveProperty("id");
     });
   });
+
+  testAuthHeader(() => request.delete(`${url}/2`));
+
 });

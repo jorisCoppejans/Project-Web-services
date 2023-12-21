@@ -38,6 +38,8 @@ const create = async ({ name, value, collectionId, favorite }) => {
         favorite
       });
 
+    console.log(id);
+
     return getById(id);
   } catch (error) {
     throw handleDBError(error);
@@ -46,7 +48,7 @@ const create = async ({ name, value, collectionId, favorite }) => {
 
 const updateById = async (id, {name, value, collectionId, favorite}) => {
   if (collectionId) {
-    const existingCollection = await collectionRepository.getAll((collection) => collection.id === collectionId).find;
+    const existingCollection = await collectionRepository.getById(collectionId);
 
     if (!existingCollection) {
       throw ServiceError.notFound(`There is no collection with id ${id}.`, { id });

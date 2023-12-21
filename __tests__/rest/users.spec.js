@@ -86,64 +86,35 @@ describe("Users", () => {
       const response = await request.get(url)
         .set("Authorization", authHeader);
       expect(response.status).toBe(200);
-      expect(response.body.count).toBe(3);
+      expect(response.body.count).toBe(2);
       expect(response.body.items[0]).toEqual({
-        id : 4,
-        firstname: "Joris",
-        lastname: "Coppejans",
-        email: "joris.coppejans@yahoo.com",
-        password: "abcd1234"
+        id : 5,
+        firstname: "Test",
+        lastname: "User",
+        email: "test.user@hogent.be",
+        password: "12345678"
       });
       expect(response.body.items[1]).toEqual({
-        id : 5,
-        firstname: "Stef",
-        lastname: "Roels",
-        email: "stef.roels@gmail.com",
-        password: "abcd1234"
-      });
-      expect(response.body.items[2]).toEqual({
-        id : 6,
-        firstname: "Robbe",
-        lastname: "Vervaet",
-        email: "robbe.vervaet@gmail.com",
-        password: "abcd1234"
+        id : 4,
+        firstname: "Admin",
+        lastname: "User",
+        email: "admin.user@hogent.be",
+        password: "12345678"
       });
     });
 
-    // it("should return 200 and all users", async () => {
-    //   const response = await request.get(url);
-    //   // expect(response.status).toBe(200);
-    //   // expect(response.body.count).toBe(3);
-    //   // expect(response.body.items[0]).toEqual({
-    //   //   id : 4,
-    //   //   firstname: "Joris",
-    //   //   lastname: "Coppejans",
-    //   //   email: "joris.coppejans@yahoo.com",
-    //   //   password: "abcd1234"
-    //   // });
-    //   // expect(response.body.items[1]).toEqual({
-    //   //   id : 5,
-    //   //   firstname: "Stef",
-    //   //   lastname: "Roels",
-    //   //   email: "stef.roels@gmail.com",
-    //   //   password: "abcd1234"
-    //   // });
-    //   // expect(response.body.items[2]).toEqual({
-    //   //   id : 6,
-    //   //   firstname: "Robbe",
-    //   //   lastname: "Vervaet",
-    //   //   email: "robbe.vervaet@gmail.com",
-    //   //   password: "abcd1234"
-    //   // });
-    // });
-
     it("should 400 when given an argument", async () => {
-      const response = await request.get(`${url}?invalid=true`);
+      const response = await request.get(`${url}?invalid=true`)
+        .set("Authorization", authHeader);
+
 
       expect(response.statusCode).toBe(400);
       expect(response.body.code).toBe("VALIDATION_FAILED");
       expect(response.body.details.query).toHaveProperty("invalid");
     });
+
+    testAuthHeader(() => request.get(url));
+
   });
 
 
@@ -160,7 +131,9 @@ describe("Users", () => {
     });
 
     it("should 200 and return the requested user", async () => {
-      const response = await request.get(`${url}/4`);
+      const response = await request.get(`${url}/4`)
+        .set("Authorization", authHeader);
+
 
       expect(response.statusCode).toBe(200);
       expect(response.body).toEqual({
@@ -173,7 +146,9 @@ describe("Users", () => {
     });
 
     it("should 404 when requesting not existing user", async () => {
-      const response = await request.get(`${url}/7`);
+      const response = await request.get(`${url}/7`)
+        .set("Authorization", authHeader);
+
   
       expect(response.statusCode).toBe(404);
       expect(response.body).toMatchObject({
@@ -187,12 +162,17 @@ describe("Users", () => {
     });
 
     it("should 400 with invalid user id", async () => {
-      const response = await request.get(`${url}/invalid`);
+      const response = await request.get(`${url}/invalid`)
+        .set("Authorization", authHeader);
+
 
       expect(response.statusCode).toBe(400);
       expect(response.body.code).toBe("VALIDATION_FAILED");
       expect(response.body.details.params).toHaveProperty("id");
     });
+
+    testAuthHeader(() => request.get(`${url}/4`));
+
   });
 
   
@@ -203,12 +183,14 @@ describe("Users", () => {
     });
   
     it("should 201 and return the created user", async () => {
-      const response = await request.post(url).send({
-        firstname: "Robbe2",
-        lastname: "Vervaet2",
-        email: "robbe.vervaet@gmail.com2",
-        password: "abcd12342"
-      });
+      const response = await request.post(url)
+        .set("Authorization", authHeader)
+        .send({
+          firstname: "Robbe2",
+          lastname: "Vervaet2",
+          email: "robbe.vervaet@gmail.com2",
+          password: "abcd12342"
+        });
 
       expect(response.status).toBe(201);
       expect(response.body.id).toBeTruthy();
@@ -222,6 +204,7 @@ describe("Users", () => {
 
     it("should 400 when missing firstname", async () => {
       const response = await request.post(url)
+        .set("Authorization", authHeader)
         .send({
           lastname: "coppejans", 
           email: "test@test.com", 
@@ -235,6 +218,7 @@ describe("Users", () => {
 
     it("should 400 when missing lastname", async () => {
       const response = await request.post(url)
+        .set("Authorization", authHeader)
         .send({
           firstname: "joris",
           email: "test@test.com", 
@@ -248,6 +232,7 @@ describe("Users", () => {
 
     it("should 400 when missing email", async () => {
       const response = await request.post(url)
+        .set("Authorization", authHeader)
         .send({
           firstname: "joris",
           lastname: "coppejans", 
@@ -261,6 +246,7 @@ describe("Users", () => {
 
     it("should 400 when missing password", async () => {
       const response = await request.post(url)
+        .set("Authorization", authHeader)
         .send({
           firstname: "joris",
           lastname: "coppejans", 
@@ -271,6 +257,8 @@ describe("Users", () => {
       expect(response.body.code).toBe("VALIDATION_FAILED");
       expect(response.body.details.body).toHaveProperty("amount");
     });
+
+    testAuthHeader(() => request.post(url));
   });
 
 
@@ -288,6 +276,7 @@ describe("Users", () => {
 
     it("should 200 and return the updated user", async () => {
       const response = await request.put(`${url}/4`)
+        .set("Authorization", authHeader)
         .send({
           firstname: "UserChange",
         });
@@ -301,6 +290,9 @@ describe("Users", () => {
         password: "abcd1234"
       });
     });
+
+    testAuthHeader(() => request.put(`${url}/4`));
+
   });
 
 
@@ -315,14 +307,16 @@ describe("Users", () => {
     });
 
     it("should 204 and return nothing", async () => {
-      const response = await request.delete(`${url}/4`);
+      const response = await request.delete(`${url}/4`)
+        .set("Authorization", authHeader);
 
       expect(response.statusCode).toBe(204);
       expect(response.body).toEqual({});
     });
 
     it("should 404 with not existing user", async () => {
-      const response = await request.delete(`${url}/7`);
+      const response = await request.delete(`${url}/7`)
+        .set("Authorization", authHeader);
 
       expect(response.statusCode).toBe(404);
       expect(response.body).toMatchObject({
@@ -336,7 +330,8 @@ describe("Users", () => {
     });
 
     it("should 400 with invalid user id", async () => {
-      const response = await request.delete(`${url}/invalid`);
+      const response = await request.delete(`${url}/invalid`)
+        .set("Authorization", authHeader);
 
       expect(response.statusCode).toBe(400);
       expect(response.body.code).toBe("VALIDATION_FAILED");
@@ -344,6 +339,6 @@ describe("Users", () => {
     });
   });
 
-  testAuthHeader(() => request.get(url));
+  testAuthHeader(() => request.delete(`${url}/4`));
 
 });  

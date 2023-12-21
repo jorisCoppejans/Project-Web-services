@@ -40,15 +40,7 @@ const getById = async (id) => {
 
 
 const create = async ({ userId }) => {
-  const highestId = await getKnex()(tables.collection)
-    .where({userId})
-    .max("id as maxId")
-    .first();
-
-  const nieuweId = (highestId && highestId.maxId) ? highestId.maxId + 1 : 1;
-
   const [id] = await getKnex()(tables.collection).insert({
-    id: nieuweId,
     userId, 
     value : "0",
   });

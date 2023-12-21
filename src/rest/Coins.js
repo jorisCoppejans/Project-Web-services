@@ -80,7 +80,7 @@ const deleteCoin = async (ctx) => {
 
 deleteCoin.validationScheme = {
   params: Joi.object({
-    id: Joi.number().integer().positive(),
+    id: Joi.number().integer(),
   }),
 };
 
