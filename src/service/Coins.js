@@ -6,13 +6,12 @@ const apiCoinsRepository = require("../repository/apicoin");
 const handleDBError = require("./_handleDBError");
 
 const getAll = async () =>{
-  let  coins = await coinsRepository.getAll();
+  let coins = await coinsRepository.getAll();
 
   const apiCoins = await apiCoinsRepository.getAll();
 
   coins = coins.map((coin) => {
     const value = apiCoins.find((c) => c.name === coin.name).value;
-    console.log(value);
 
     return {id: coin.id, name: coin.name, value: value, collectionId:coin.collectionId, favorite: coin.favorite};
   });

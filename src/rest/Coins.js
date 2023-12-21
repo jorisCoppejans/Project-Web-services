@@ -6,7 +6,6 @@ const validate = require("../core/validation");
 
 const getAllCoins = async(ctx) =>{
   ctx.body = await CoinService.getAll();
-  console.log(ctx.body);
 };
 
 getAllCoins.validationScheme = null;
