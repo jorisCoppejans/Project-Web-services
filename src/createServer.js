@@ -1,5 +1,7 @@
 const Koa = require("koa");
 const config = require("config");
+const cron = require("node-cron");
+
 
 const installRest = require("./rest");
 const { initializeData } = require("./data");
@@ -22,7 +24,18 @@ module.exports = async function createServer() {
     },
   });
 
-  await initializeData();
+  cron.schedule("0 12,18 * * *", async () => {
+    const logger = getLogger();
+    logger.info("Running seed at", new Date());
+    
+    try {
+      await initializeData();
+    } catch (error) {
+      logger.error("Error while running seed", { error });
+    }
+  });
+
+  
 
   const app = new Koa();
 
