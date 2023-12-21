@@ -24,6 +24,9 @@ module.exports = async function createServer() {
     },
   });
 
+  
+  await initializeData();
+
   cron.schedule("0 12,18 * * *", async () => {
     const logger = getLogger();
     logger.info("Running seed at", new Date());
@@ -34,8 +37,6 @@ module.exports = async function createServer() {
       logger.error("Error while running seed", { error });
     }
   });
-
-  
 
   const app = new Koa();
 

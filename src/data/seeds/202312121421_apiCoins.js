@@ -3,7 +3,7 @@ const axios = require("axios");
 const { tables } = require("..");
 
 const seedData = async () => {
-  const key = "F4A8E0F9-B258-4EA9-9250-542E978ECD97";
+  const key = "43581718-F839-45B3-AA1B-FF1659D1CD06";
 
   const response = await axios.get(`https://rest.coinapi.io/v1/exchangerate/EUR?apikey=${key}`);
   const rates = response.data.rates;
