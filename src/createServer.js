@@ -4,7 +4,7 @@ const cron = require("node-cron");
 
 
 const installRest = require("./rest");
-const { initializeData } = require("./data");
+const { initializeData, shutdownData } = require("./data");
 const installMiddleware = require("./core/installMiddlewares");
 const { initializeLogger, getLogger } = require("./core/logging");
 
@@ -48,14 +48,20 @@ module.exports = async function createServer() {
     getApp() {
       return app;
     },
-  
+
     start() {
       return new Promise((resolve) => {
-        const port = config.get("port");
-        app.listen(port);
-        getLogger().info(`🚀 Server listening on http://localhost:${port}`);
-        resolve();
+        app.listen(9000, () => {
+          getLogger().info("🚀 Server listening on http://localhost:9000");
+          resolve();
+        });
       });
+    },
+
+    async stop() {
+      app.removeAllListeners();
+      await shutdownData();
+      getLogger().info("Goodbye! 👋");
     },
   };
 };

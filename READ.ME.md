@@ -21,7 +21,6 @@ Ik verwacht dat volgende software reeds geïnstalleerd is:
 
 ## Opstarten
 
-Schrijf hier hoe we de applicatie starten (.env bestanden aanmaken, commando's om uit te voeren...)
 In het .env-bestand moeten volgende waarden gedefinieerd zijn:
 
 - NODE_ENV=development/production
@@ -31,7 +30,7 @@ Om de applicatie te starten typed men in de terminal: "Yarn start"
 
 ## Testen
 
-In het .env-bestand volgende waarden gedefinieerd zijn:
+In het .env.test-bestand volgende waarden gedefinieerd zijn:
 
 - NODE_ENV=test
 - DATABASE_PASSWORD=...
