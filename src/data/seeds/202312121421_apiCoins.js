@@ -8,7 +8,7 @@ const seedData = async () => {
   const response = await axios.get(`https://rest.coinapi.io/v1/exchangerate/EUR?apikey=${key}`);
   const rates = response.data.rates;
 
-  const apiCoins = rates.slice(60, 80).map((rate) => ({
+  const apiCoins = rates.filter((coin) => coin.rate < 100000 && coin.rate > 10).map((rate) => ({
     name: rate.asset_id_quote,
     value: parseFloat(rate.rate)
   }));

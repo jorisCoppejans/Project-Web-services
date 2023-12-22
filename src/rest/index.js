@@ -3,6 +3,7 @@ const Router = require("@koa/router");
 const installUserRouter = require("./Users");
 const installCollectionRouter = require("./Collections");
 const installCoinRouter = require("./Coins");
+const installApiCoinRouter = require("./apicoins");
 const installHealthRouter = require("./health");
 
 /**
@@ -16,6 +17,7 @@ module.exports = (app) => {
     prefix: "/api",
   });
 
+  installApiCoinRouter(router);
   installUserRouter(router);
   installCollectionRouter(router);
   installCoinRouter(router);

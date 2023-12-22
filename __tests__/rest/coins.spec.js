@@ -1,11 +1,8 @@
-const supertest = require("supertest");
+const { withServer, login } = require("../supertest.setup");
+const { testAuthHeader } = require("../common/auth");
+const { tables } = require("../../src/data");
 
-const createServer = require("../../src/createServer");
-const {getKnex, tables} = require("../../src/data");
 
-let server;
-let request;
-let knex;
 
 const data = {
   coins: [{
@@ -46,31 +43,31 @@ const data = {
     userId : 5,
     value : 200.25
   }],
-  users: [{
-    id : 4,
-    firstname: "Joris",
-    lastname: "Coppejans",
-    email: "joris.coppejans@yahoo.com",
-    password: "abcd1234",
-    roles: "[\"admin\"]"
-  },
-  {
-    id : 5,
-    firstname: "Stef",
-    lastname: "Roels",
-    email: "stef.roels@gmail.com",
-    password: "abcd1234",
-    roles: "[\"user\"]"
-  },
-  {
-    id : 6,
-    firstname: "Robbe",
-    lastname: "Vervaet",
-    email: "robbe.vervaet@gmail.com",
-    password: "abcd1234",
-    roles: "[\"user\"]"
-  },
-  ]
+  // users: [{
+  //   id : 4,
+  //   firstname: "Joris",
+  //   lastname: "Coppejans",
+  //   email: "joris.coppejans@yahoo.com",
+  //   password: "abcd1234",
+  //   roles: "[\"admin\"]"
+  // },
+  // {
+  //   id : 5,
+  //   firstname: "Stef",
+  //   lastname: "Roels",
+  //   email: "stef.roels@gmail.com",
+  //   password: "abcd1234",
+  //   roles: "[\"user\"]"
+  // },
+  // {
+  //   id : 6,
+  //   firstname: "Robbe",
+  //   lastname: "Vervaet",
+  //   email: "robbe.vervaet@gmail.com",
+  //   password: "abcd1234",
+  //   roles: "[\"user\"]"
+  // },
+  // ]
 };
 
 const convertToBoolean = (value) => {
@@ -82,20 +79,33 @@ const url = "/api/coins";
 const dataToDelete = {
   coins: [1, 2, 3, 4],
   collections: [1, 2],
-  users: [4, 5, 6]
+  // users: [4, 5, 6]
 };
 
 describe("Coin", () => {
-  
-  beforeAll(async () => {
-    server = await createServer();
-    request = supertest(server.getApp().callback());
-    knex = getKnex();
+  let request, knex, authHeader;
+
+  withServer(({
+    supertest,
+    knex: k,
+  }) => {
+    request = supertest;
+    knex = k;
   });
 
-  afterAll(async () => {
-    await server.stop();
+  
+  beforeAll(async () => {
+    // server = await createServer();
+    // request = supertest(server.getApp().callback());
+    // knex = getKnex();
+
+    authHeader = await login(request);
+
   });
+
+  // afterAll(async () => {
+  //   await server.stop();
+  // });
 
   describe("GET /api/coins", () => {
     beforeAll(async () => {
@@ -109,7 +119,8 @@ describe("Coin", () => {
     });
 
     it("should return 200 and all coins", async () => {
-      const response = await request.get(url);
+      const response = await request.get(url)
+        .set("Authorization", authHeader);
       expect(response.status).toBe(200);
       expect(response.body.count).toBe(4);
 
@@ -151,12 +162,17 @@ describe("Coin", () => {
     });
 
     it("should 400 when given an argument", async () => {
-      const response = await request.get(`${url}?invalid=true`);
+      const response = await request.get(`${url}?invalid=true`)
+        .set("Authorization", authHeader);
+
 
       expect(response.statusCode).toBe(400);
       expect(response.body.code).toBe("VALIDATION_FAILED");
       expect(response.body.details.query).toHaveProperty("invalid");
     });
+
+    testAuthHeader(() => request.get(url));
+
   });
 
   describe("GET /api/coins/:id", () => {
@@ -171,7 +187,9 @@ describe("Coin", () => {
     });
 
     it("should 200 and return the requested coin", async () => {
-      const response = await request.get(`${url}/4`);
+      const response = await request.get(`${url}/4`)
+        .set("Authorization", authHeader);
+
 
       expect(response.statusCode).toBe(200);
       expect(response.body).toEqual({
@@ -184,7 +202,9 @@ describe("Coin", () => {
     });
 
     it("should 404 when requesting not existing coin", async () => {
-      const response = await request.get(`${url}/7`);
+      const response = await request.get(`${url}/7`)
+        .set("Authorization", authHeader);
+
   
       expect(response.statusCode).toBe(404);
       expect(response.body).toMatchObject({
@@ -198,12 +218,17 @@ describe("Coin", () => {
     });
 
     it("should 400 with invalid coin id", async () => {
-      const response = await request.get(`${url}/invalid`);
+      const response = await request.get(`${url}/invalid`)
+        .set("Authorization", authHeader);
+
 
       expect(response.statusCode).toBe(400);
       expect(response.body.code).toBe("VALIDATION_FAILED");
       expect(response.body.details.params).toHaveProperty("id");
     });
+
+    testAuthHeader(() => request.get(`${url}/4`));
+
   });
   
   describe("POST /api/coins", () => {
@@ -214,12 +239,14 @@ describe("Coin", () => {
     });
 
     it("should 201 and return the created coins", async () => {
-      const response = await request.post(url).send({
-        name: "Test",
-        value: 500,
-        collectionId: 2,
-        favorite: true, 
-      });
+      const response = await request.post(url)
+        .set("Authorization", authHeader)
+        .send({
+          name: "Test",
+          value: 500,
+          collectionId: 2,
+          favorite: true, 
+        });
     
       expect(response.status).toBe(201);
       expect(response.body.id).toBeTruthy();
@@ -233,6 +260,7 @@ describe("Coin", () => {
 
     it("should 404 when collection does not exist", async () => {
       const response = await request.post(url)
+        .set("Authorization", authHeader)
         .send({
           name: "test",
           value: 123, 
@@ -253,6 +281,7 @@ describe("Coin", () => {
 
     it("should 400 when missing name", async () => {
       const response = await request.post(url)
+        .set("Authorization", authHeader)
         .send({
           value: 123, 
           collectionId: 1, 
@@ -266,6 +295,7 @@ describe("Coin", () => {
 
     it("should 400 when missing value", async () => {
       const response = await request.post(url)
+        .set("Authorization", authHeader)
         .send({
           name: "test", 
           collectionId: 1, 
@@ -279,6 +309,7 @@ describe("Coin", () => {
 
     it("should 400 when missing collection", async () => {
       const response = await request.post(url)
+        .set("Authorization", authHeader)
         .send({
           name: "test", 
           value: 123, 
@@ -292,6 +323,7 @@ describe("Coin", () => {
 
     it("should 400 when missing favorite", async () => {
       const response = await request.post(url)
+        .set("Authorization", authHeader)
         .send({
           name: "test", 
           collectionId: 1, 
@@ -302,6 +334,9 @@ describe("Coin", () => {
       expect(response.body.code).toBe("VALIDATION_FAILED");
       expect(response.body.details.body).toHaveProperty("amount");
     });
+
+    testAuthHeader(() => request.post(url));
+
   });
 
 
@@ -319,6 +354,7 @@ describe("Coin", () => {
 
     it("should 200 and return the updated coin", async () => {
       const response = await request.put(`${url}/4`)
+        .set("Authorization", authHeader)
         .send({
           name: "CoinChange",
           value : 159,
@@ -338,6 +374,7 @@ describe("Coin", () => {
 
     it("should 404 when collection does not exist", async () => {
       const response = await request.post(url)
+        .set("Authorization", authHeader)
         .send({
           name: "test",
           value: 123, 
@@ -355,6 +392,9 @@ describe("Coin", () => {
       });
       expect(response.body.stack).toBeTruthy();
     });
+
+    testAuthHeader(() => request.put(`${url}/4`));
+
   });
 
 
@@ -367,18 +407,20 @@ describe("Coin", () => {
     afterAll(async () => {
       await knex(tables.coin).whereIn("id", dataToDelete.coins).delete();
       await knex(tables.collection).whereIn("id", dataToDelete.collections).delete();
-      await knex(tables.user).whereIn("id", dataToDelete.users).delete();
+      // await knex(tables.user).whereIn("id", dataToDelete.users).delete();
     });
 
     it("should 204 and return nothing", async () => {
-      const response = await request.delete(`${url}/4`);
+      const response = await request.delete(`${url}/4`)
+        .set("Authorization", authHeader);
       
       expect(response.statusCode).toBe(204);
       expect(response.body).toEqual({});
     });
 
     it("should 404 with not existing coin", async () => {
-      const response = await request.delete(`${url}/5`);
+      const response = await request.delete(`${url}/5`)
+        .set("Authorization", authHeader);
 
       expect(response.statusCode).toBe(404);
       expect(response.body).toMatchObject({
@@ -392,11 +434,15 @@ describe("Coin", () => {
     });
 
     it("should 400 with invalid coin id", async () => {
-      const response = await request.delete(`${url}/invalid`);
+      const response = await request.delete(`${url}/invalid`)
+        .set("Authorization", authHeader);
 
       expect(response.statusCode).toBe(400);
       expect(response.body.code).toBe("VALIDATION_FAILED");
       expect(response.body.details.params).toHaveProperty("id");
     });
+
+    testAuthHeader(() => request.delete(`${url}/5`));
+
   });
 });  
