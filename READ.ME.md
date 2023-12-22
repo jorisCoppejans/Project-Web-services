@@ -21,8 +21,19 @@ Ik verwacht dat volgende software reeds geïnstalleerd is:
 
 ## Opstarten
 
-> Schrijf hier hoe we de applicatie starten (.env bestanden aanmaken, commando's om uit te voeren...)
+Schrijf hier hoe we de applicatie starten (.env bestanden aanmaken, commando's om uit te voeren...)
+In het .env-bestand moeten volgende waarden gedefinieerd zijn:
+
+- NODE_ENV=development/production
+- DATABASE_PASSWORD = ...
+
+Om de applicatie te starten typed men in de terminal: "Yarn start"
 
 ## Testen
 
-> Schrijf hier hoe we de testen uitvoeren (.env bestanden aanmaken, commando's om uit te voeren...)
+In het .env-bestand volgende waarden gedefinieerd zijn:
+
+- NODE_ENV=test
+- DATABASE_PASSWORD=...
+
+Om de testen te runnen typet men in de terminal: "Yarn test"

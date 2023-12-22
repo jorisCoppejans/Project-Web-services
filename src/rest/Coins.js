@@ -3,6 +3,8 @@ const Joi = require("joi");
 
 const CoinService = require("../service/Coins");
 const validate = require("../core/validation");
+const { requireAuthentication } = require("../core/auth");
+
 
 const getAllCoins = async(ctx) =>{
   ctx.body = await CoinService.getAll();
@@ -89,11 +91,13 @@ module.exports = (app) => {
     prefix: "/Coins",
   });
 
-  router.get("/", validate(getAllCoins.validationScheme), getAllCoins);
-  router.get("/:id", validate(getCoinById.validationScheme), getCoinById);
-  router.post("/", validate(createCoin.validationScheme), createCoin);
-  router.put("/:id", validate(updateCoin.validationScheme), updateCoin);
-  router.delete("/:id", validate(deleteCoin.validationScheme), deleteCoin);
+  router.use(requireAuthentication);
+
+  router.get("/", requireAuthentication, validate(getAllCoins.validationScheme), getAllCoins);
+  router.get("/:id", requireAuthentication, validate(getCoinById.validationScheme), getCoinById);
+  router.post("/", requireAuthentication, validate(createCoin.validationScheme), createCoin);
+  router.put("/:id", requireAuthentication, validate(updateCoin.validationScheme), updateCoin);
+  router.delete("/:id", requireAuthentication, validate(deleteCoin.validationScheme), deleteCoin);
 
   app.use(router.routes())
     .use(router.allowedMethods());
